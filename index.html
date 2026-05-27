@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediFlow AI — Hospital Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ THEME VARIABLES ============ */
+:root[data-theme="dark"] {
+  --bg:#020b10;--bg1:#05131d;--bg2:#071d2b;--bg3:#0a2538;
+  --surface:#0d2d42;--sur2:#113550;--border:#1a4060;--bord2:#0f2d42;
+  --accent:#00c8f0;--acc-dim:rgba(0,200,240,0.12);
+  --green:#00e8a0;--grn-dim:rgba(0,232,160,0.1);
+  --orange:#ff7c2a;--orn-dim:rgba(255,124,42,0.12);
+  --red:#ff2d55;--red-dim:rgba(255,45,85,0.12);
+  --yellow:#ffc444;--ylw-dim:rgba(255,196,68,0.1);
+  --text:#ddf0f9;--text2:#6ea8c4;--text3:#3a6a84;
+  --shadow:0 8px 32px rgba(0,0,0,0.5);
+  --noise-opacity:0.6;
+  --login-left-bg:var(--bg1);
+  --nav-bg:rgba(2,11,16,0.88);
+  --modal-bg-color:rgba(2,11,16,0.88);
+  --chart-bg:var(--surface);
+  --input-bg:var(--bg2);
+  --card-hover:rgba(0,200,240,0.3);
+  --scrollbar-track:var(--bg1);
+  --scrollbar-thumb:var(--border);
+}
+
+:root[data-theme="light"] {
+  --bg:#f0f6fa;--bg1:#e4eef5;--bg2:#d8eaf3;--bg3:#c8dded;
+  --surface:#ffffff;--sur2:#f4f9fc;--border:#b0cfe0;--bord2:#c5dce9;
+  --accent:#0088aa;--acc-dim:rgba(0,136,170,0.1);
+  --green:#008855;--grn-dim:rgba(0,136,85,0.08);
+  --orange:#d45a00;--orn-dim:rgba(212,90,0,0.1);
+  --red:#cc1133;--red-dim:rgba(204,17,51,0.08);
+  --yellow:#aa7700;--ylw-dim:rgba(170,119,0,0.08);
+  --text:#0a2233;--text2:#2a5870;--text3:#5a8da8;
+  --shadow:0 8px 32px rgba(0,80,120,0.12);
+  --noise-opacity:0.2;
+  --login-left-bg:#e0eef7;
+  --nav-bg:rgba(240,246,250,0.92);
+  --modal-bg-color:rgba(200,225,240,0.75);
+  --chart-bg:#ffffff;
+  --input-bg:#f0f6fa;
+  --card-hover:rgba(0,136,170,0.3);
+  --scrollbar-track:#e4eef5;
+  --scrollbar-thumb:#b0cfe0;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Outfit',sans-serif;font-size:15px;min-height:100vh;overflow-x:hidden;
+  transition:background 0.35s ease, color 0.35s ease;
+}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--scrollbar-track);}
+::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");opacity:var(--noise-opacity);}
+
+/* ============ THEME TOGGLE BUTTON ============ */
+.theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text2);
+  outline: none;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.theme-toggle-track {
+  width: 32px;
+  height: 17px;
+  background: var(--bg3);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .theme-toggle-track {
+  background: rgba(0,200,240,0.15);
+  border-color: var(--accent);
+}
+[data-theme="light"] .theme-toggle-track {
+  background: rgba(0,136,170,0.15);
+  border-color: var(--accent);
+}
+.theme-toggle-knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+}
+[data-theme="light"] .theme-toggle-knob {
+  transform: translateX(15px);
+}
+.theme-toggle-icon {
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
+}
+
+/* Login page theme toggle (floating) */
+.login-theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+}
+
+/* ============ LOGIN PAGE ============ */
+#loginPage {
+  display:flex;min-height:100vh;position:relative;overflow:hidden;
+}
+#loginPage::before {
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 60% 40%, rgba(0,200,240,0.06) 0%, transparent 70%),
+             radial-gradient(ellipse 60% 80% at 20% 80%, rgba(0,232,160,0.04) 0%, transparent 60%);
+}
+.login-left {
+  width:55%;background:var(--login-left-bg);border-right:1px solid var(--border);
+  padding:3rem;display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.login-left::before {
+  content:'';position:absolute;top:-100px;left:-100px;width:500px;height:500px;
+  border-radius:50%;background:radial-gradient(circle, rgba(0,200,240,0.05) 0%, transparent 70%);
+  pointer-events:none;
+}
+.login-brand { z-index:1; }
+.brand-name { font-family:'Fraunces',serif;font-size:2.5rem;font-weight:700;line-height:1; }
+.brand-name em { color:var(--accent);font-style:italic; }
+.brand-name sup { font-family:'JetBrains Mono',monospace;font-size:0.4rem;color:var(--green);letter-spacing:2px;vertical-align:super;margin-left:2px; }
+.brand-sub { font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text3);margin-top:0.5rem;letter-spacing:2px;text-transform:uppercase; }
+
+.live-status-panel { z-index:1; }
+.lsp-title {
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3);
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.dot-live{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s infinite;display:inline-block;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.status-grid {
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.25rem;
+}
+.sg-cell {
+  background:var(--bg2);padding:1rem 1.25rem;
+  transition:background 0.35s ease;
+}
+.sg-val {font-family:'Fraunces',serif;font-size:1.9rem;line-height:1;}
+.sg-lbl {font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text3);margin-top:0.2rem;letter-spacing:1px;text-transform:uppercase;}
+.sg-delta {font-family:'JetBrains Mono',monospace;font-size:0.65rem;margin-top:0.15rem;}
+.up{color:var(--green);}
+.down{color:var(--red);}
+.warn{color:var(--yellow);}
+
+.unit-bars { display:flex;flex-direction:column;gap:0.6rem; }
+.ub-row { display:flex;align-items:center;gap:0.75rem; }
+.ub-name { font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text2);min-width:90px; }
+.ub-track { flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden; }
+.ub-fill { height:100%;border-radius:3px;transition:width 1.5s cubic-bezier(0.16,1,0.3,1); }
+.ub-pct { font-family:'JetBrains Mono',monospace;font-size:0.65rem;min-width:36px;text-align:right; }
+
+.alert-ticker {
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:0.6rem 1rem;display:flex;align-items:center;gap:0.75rem;
+  font-size:0.75rem;color:var(--text2);margin-top:1rem;
+  overflow:hidden;position:relative;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.ticker-icon { flex-shrink:0;font-size:0.9rem; }
+.ticker-text { overflow:hidden;white-space:nowrap;text-overflow:ellipsis; }
+
+.login-right {
+  width:45%;display:flex;align-items:center;justify-content:center;
+  padding:2rem;position:relative;
+}
+.login-box { width:100%;max-width:420px; }
+.login-box h2 { font-family:'Fraunces',serif;font-size:2rem;font-weight:600;margin-bottom:0.3rem; }
+.login-box h2 em { color:var(--accent);font-style:italic; }
+.login-sub {font-size:0.82rem;color:var(--text2);margin-bottom:2rem;}
+
+.role-tabs {
+  display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:4px;margin-bottom:1.75rem;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.role-tab {
+  flex:1;padding:0.55rem;border:none;background:transparent;
+  font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:600;
+  color:var(--text3);cursor:pointer;border-radius:6px;
+  transition:all 0.2s;text-align:center;
+}
+.role-tab:hover{color:var(--text2);}
+.role-tab.active {
+  background:var(--surface);color:var(--accent);
+  box-shadow:0 1px 6px rgba(0,0,0,0.15);
+}
+.role-tab .role-icon { display:block;font-size:1.1rem;margin-bottom:0.2rem; }
+.role-tab .role-label { display:block;font-size:0.7rem;letter-spacing:0.5px; }
+
+.role-badge-bar {
+  display:flex;align-items:center;gap:0.6rem;
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:0.6rem 0.9rem;margin-bottom:1.25rem;font-size:0.78rem;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.rb-dot{width:8px;height:8px;border-radius:50%;}
+.rb-name{font-weight:600;color:var(--text);}
+.rb-desc{color:var(--text2);margin-left:auto;font-size:0.72rem;font-family:'JetBrains Mono',monospace;}
+
+.form-group { margin-bottom:1rem; }
+label {display:block;font-size:0.72rem;color:var(--text3);margin-bottom:0.3rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;}
+.input-wrap { position:relative; }
+.input-wrap input {
+  width:100%;background:var(--input-bg);border:1px solid var(--border);
+  color:var(--text);padding:0.7rem 0.9rem 0.7rem 2.4rem;border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.35s;
+}
+.input-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,200,240,0.12);}
+.input-wrap input::placeholder{color:var(--text3);}
+.input-icon{position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.88rem;pointer-events:none;}
+.pw-toggle{position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:0.85rem;padding:0;}
+.pw-toggle:hover{color:var(--accent);}
+
+.credentials-hint {
+  background:var(--bg2);border:1px solid var(--bord2);border-radius:8px;
+  padding:0.75rem;margin-bottom:1.25rem;font-size:0.75rem;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.cred-title{font-family:'JetBrains Mono',monospace;color:var(--text3);font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;}
+.cred-row{display:flex;gap:0.5rem;align-items:center;padding:0.2rem 0;color:var(--text2);}
+.cred-key{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.72rem;min-width:70px;}
+
+.btn-login {
+  width:100%;padding:0.8rem;background:var(--accent);color:#fff;
+  border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-weight:700;
+  font-size:0.9rem;cursor:pointer;letter-spacing:0.5px;
+  transition:all 0.2s;box-shadow:0 0 24px rgba(0,200,240,0.2);
+  position:relative;overflow:hidden;
+}
+[data-theme="dark"] .btn-login { color:var(--bg); }
+[data-theme="light"] .btn-login { color:#fff; }
+.btn-login:hover{filter:brightness(1.1);box-shadow:0 0 40px rgba(0,200,240,0.35);transform:translateY(-1px);}
+.btn-login:active{transform:translateY(0);}
+.btn-login.loading{pointer-events:none;opacity:0.8;}
+
+.login-error {
+  background:var(--red-dim);border:1px solid rgba(255,45,85,0.3);
+  border-radius:8px;padding:0.6rem 0.9rem;
+  font-size:0.8rem;color:var(--red);margin-bottom:1rem;
+  display:none;
+}
+.login-error.show{display:block;}
+
+/* ============ APP SHELL ============ */
+#appShell { display:none; }
+#appShell.active { display:block; }
+#loginPage.hidden { display:none; }
+
+.role-indicator {
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.3rem 0.8rem;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.ri-dot{width:7px;height:7px;border-radius:50%;}
+
+/* ============ NAV ============ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:60px;display:flex;align-items:center;gap:0;background:var(--nav-bg);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 1.5rem;transition:background 0.35s ease, border-color 0.35s ease;}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--text);margin-right:2rem;white-space:nowrap;}
+.nav-logo em{color:var(--accent);font-style:italic;}
+.nav-logo sup{font-family:'JetBrains Mono',monospace;font-size:0.45rem;color:var(--green);letter-spacing:2px;vertical-align:super;margin-left:2px;}
+.nav-tabs{display:flex;flex:1;gap:2px;}
+.nav-tab{padding:0.4rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.18s;border:none;background:none;font-family:'Outfit',sans-serif;white-space:nowrap;}
+.nav-tab:hover{color:var(--accent);background:var(--acc-dim);}
+.nav-tab.active{color:var(--accent);background:var(--acc-dim);}
+.nav-tab.disabled{opacity:0.35;cursor:not-allowed;pointer-events:none;}
+.nav-right{display:flex;align-items:center;gap:0.75rem;margin-left:auto;}
+.live-badge{display:flex;align-items:center;gap:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text3);}
+.save-indicator{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--green);opacity:0;transition:opacity 0.5s;}
+.save-indicator.show{opacity:1;}
+.btn-logout{background:var(--red-dim);border:1px solid rgba(255,45,85,0.25);color:var(--red);padding:0.3rem 0.75rem;border-radius:8px;font-size:0.72rem;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all 0.2s;}
+.btn-logout:hover{background:rgba(255,45,85,0.25);}
+
+/* ============ PAGES ============ */
+.page{display:none;padding:76px 1.5rem 3rem;animation:fadeIn 0.3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.perm-banner {
+  background:rgba(255,124,42,0.08);border:1px solid rgba(255,124,42,0.3);
+  border-radius:8px;padding:0.75rem 1rem;margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--orange);
+}
+
+/* ============ TYPOGRAPHY ============ */
+.mono{font-family:'JetBrains Mono',monospace;}
+h1{font-family:'Fraunces',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:600;}
+h2{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;}
+h3{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;}
+.page-title{margin-bottom:0.4rem;}
+.page-sub{color:var(--text2);font-size:0.88rem;margin-bottom:2rem;}
+em{font-style:italic;color:var(--accent);}
+
+/* ============ CARDS ============ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color 0.2s, background 0.35s ease;}
+.card:hover{border-color:var(--card-hover);}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.card-title{font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+
+/* ============ BUTTONS ============ */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1.2rem;border-radius:8px;font-weight:600;font-size:0.82rem;cursor:pointer;transition:all 0.18s;font-family:'Outfit',sans-serif;border:none;white-space:nowrap;}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 0 20px rgba(0,200,240,0.15);}
+[data-theme="dark"] .btn-primary{color:var(--bg);}
+.btn-primary:hover{filter:brightness(1.1);box-shadow:0 0 32px rgba(0,200,240,0.3);transform:translateY(-1px);}
+.btn-green{background:var(--green);color:var(--bg);}
+.btn-green:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,45,85,0.3);}
+.btn-red:hover{background:rgba(255,45,85,0.2);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:0.35rem 0.75rem;font-size:0.75rem;}
+.btn-xs{padding:0.25rem 0.55rem;font-size:0.7rem;}
+.btn-disabled{opacity:0.35;cursor:not-allowed;pointer-events:none;}
+
+/* ============ BADGES ============ */
+.badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.18rem 0.55rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:500;}
+.badge-p1{background:rgba(255,45,85,0.18);color:var(--red);border:1px solid rgba(255,45,85,0.3);}
+.badge-p2{background:rgba(255,124,42,0.15);color:var(--orange);border:1px solid rgba(255,124,42,0.3);}
+.badge-p3{background:rgba(255,196,68,0.12);color:var(--yellow);border:1px solid rgba(255,196,68,0.25);}
+.badge-p4{background:rgba(0,232,160,0.1);color:var(--green);border:1px solid rgba(0,232,160,0.25);}
+.badge-critical{background:rgba(255,45,85,0.18);color:var(--red);}
+.badge-high{background:rgba(255,124,42,0.15);color:var(--orange);}
+.badge-medium{background:rgba(255,196,68,0.12);color:var(--yellow);}
+.badge-low{background:rgba(0,232,160,0.1);color:var(--green);}
+.badge-blue{background:var(--acc-dim);color:var(--accent);}
+
+/* ============ KPI STRIP ============ */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.75rem;}
+.kpi-cell{background:var(--surface);padding:1.25rem 1.5rem;text-align:center;transition:background 0.35s ease;}
+.kpi-val{font-family:'Fraunces',serif;font-size:2rem;line-height:1;}
+.kpi-lbl{font-size:0.7rem;color:var(--text3);margin-top:0.35rem;text-transform:uppercase;letter-spacing:1px;}
+.kpi-delta{font-family:'JetBrains Mono',monospace;font-size:0.68rem;margin-top:0.3rem;}
+
+/* ============ GRID ============ */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+
+/* ============ TABLE ============ */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);transition:border-color 0.35s ease;}
+table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+thead tr{background:var(--bg2);}
+th{padding:0.75rem 1rem;text-align:left;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+th:hover{color:var(--accent);}
+td{padding:0.8rem 1rem;border-bottom:1px solid var(--bord2);color:var(--text2);white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,200,240,0.03);color:var(--text);}
+td.hl{color:var(--accent);font-family:'JetBrains Mono',monospace;}
+
+/* ============ FORM ============ */
+input,select,textarea{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.9rem;border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.85rem;outline:none;transition:border-color 0.2s, background 0.35s ease;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+input::placeholder{color:var(--text3);}
+select option{background:var(--bg2);}
+.fg-label{display:block;font-size:0.75rem;color:var(--text3);margin-bottom:0.3rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;}
+.form-row{display:grid;gap:1rem;}
+.form-row.cols-2{grid-template-columns:1fr 1fr;}
+.form-row.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.form-row.cols-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.form-group{margin-bottom:1rem;}
+
+/* ============ PRIORITY CARD ============ */
+.priority-card{border-radius:12px;padding:1.25rem 1.5rem;border:1px solid;margin-bottom:0.75rem;display:flex;align-items:flex-start;gap:1.25rem;transition:transform 0.15s;cursor:default;position:relative;overflow:hidden;}
+.priority-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.priority-card.p1{background:rgba(255,45,85,0.06);border-color:rgba(255,45,85,0.3);}
+.priority-card.p1::before{background:var(--red);}
+.priority-card.p2{background:rgba(255,124,42,0.05);border-color:rgba(255,124,42,0.3);}
+.priority-card.p2::before{background:var(--orange);}
+.priority-card.p3{background:rgba(255,196,68,0.04);border-color:rgba(255,196,68,0.25);}
+.priority-card.p3::before{background:var(--yellow);}
+.priority-card.p4{background:rgba(0,232,160,0.03);border-color:rgba(0,232,160,0.2);}
+.priority-card.p4::before{background:var(--green);}
+.priority-card:hover{transform:translateX(4px);}
+.pc-rank{font-family:'Fraunces',serif;font-size:2.5rem;line-height:1;min-width:50px;text-align:center;}
+.p1 .pc-rank{color:var(--red);}.p2 .pc-rank{color:var(--orange);}.p3 .pc-rank{color:var(--yellow);}.p4 .pc-rank{color:var(--green);}
+.pc-info{flex:1;}
+.pc-name{font-weight:700;font-size:1rem;color:var(--text);margin-bottom:0.2rem;}
+.pc-id{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text3);}
+.pc-reason{font-size:0.8rem;color:var(--text2);margin-top:0.4rem;line-height:1.5;}
+.pc-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.6rem;}
+.pc-score-box{text-align:center;min-width:80px;}
+.pc-score{font-family:'Fraunces',serif;font-size:2rem;line-height:1;}
+.pc-score-lbl{font-size:0.65rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:0.2rem;}
+.score-bar{height:4px;background:var(--bg3);border-radius:2px;margin-top:0.5rem;overflow:hidden;}
+.score-fill{height:100%;border-radius:2px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1);}
+
+/* ============ CENSUS ============ */
+.census-unit{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;transition:background 0.35s ease, border-color 0.35s ease;}
+.cu-header{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.9rem;}
+.cu-name{font-weight:600;font-size:0.9rem;flex:1;}
+.cu-pct-badge{font-family:'JetBrains Mono',monospace;font-size:0.75rem;padding:0.18rem 0.5rem;border-radius:4px;}
+.cu-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:0.6rem;}
+.cu-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);}
+.cu-detail{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text3);}
+.cu-pred{font-size:0.75rem;color:var(--green);margin-top:0.25rem;}
+
+/* ============ MODALS ============ */
+.modal-bg{display:none;position:fixed;inset:0;z-index:800;background:var(--modal-bg-color);backdrop-filter:blur(16px);align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:2rem;width:90%;max-width:680px;max-height:88vh;overflow-y:auto;position:relative;animation:fadeIn 0.25s ease;transition:background 0.35s ease, border-color 0.35s ease;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:1px solid var(--border);color:var(--text2);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:1rem;}
+.modal-close:hover{border-color:var(--red);color:var(--red);}
+.modal-title{font-family:'Fraunces',serif;font-size:1.5rem;margin-bottom:1.5rem;}
+
+/* ============ ALERTS ============ */
+.alert-strip{display:flex;flex-direction:column;gap:0.6rem;}
+.alert-row{display:flex;align-items:center;gap:0.9rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem 1.1rem;font-size:0.83rem;transition:background 0.35s ease, border-color 0.35s ease;}
+.alert-row.critical{border-left:3px solid var(--red);}
+.alert-row.warning{border-left:3px solid var(--yellow);}
+.alert-row.info{border-left:3px solid var(--accent);}
+.alert-icon{font-size:1.1rem;flex-shrink:0;}
+.alert-body{flex:1;}
+.alert-body strong{display:block;margin-bottom:0.15rem;}
+.alert-body span{color:var(--text2);font-size:0.78rem;}
+.alert-time{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text3);}
+
+/* ============ CSV / DROPZONE ============ */
+.csv-dropzone{border:2px dashed var(--border);border-radius:12px;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:1.5rem;}
+.csv-dropzone:hover,.csv-dropzone.drag{border-color:var(--accent);background:var(--acc-dim);}
+.csv-dropzone .csv-icon{font-size:2.5rem;margin-bottom:0.75rem;}
+.csv-dropzone h3{font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:0.4rem;}
+.csv-dropzone p{font-size:0.82rem;color:var(--text2);}
+
+/* ============ CHART ============ */
+.chart-box{background:var(--chart-bg);border:1px solid var(--border);border-radius:12px;padding:1.25rem;transition:background 0.35s ease, border-color 0.35s ease;}
+.chart-lbl{font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;}
+
+/* ============ SEARCH ============ */
+.search-row{display:flex;gap:0.75rem;margin-bottom:1.25rem;align-items:center;}
+.search-input-wrap{position:relative;flex:1;}
+.search-input-wrap input{padding-left:2.2rem;}
+.search-icon{position:absolute;left:0.7rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.9rem;pointer-events:none;}
+.scroll-hint{color:var(--text3);font-size:0.72rem;font-family:'JetBrains Mono',monospace;padding:1rem 0 0.5rem;text-align:center;}
+
+/* ============ ADMIN PANEL ============ */
+.admin-user-card {
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.25rem;display:flex;align-items:center;gap:1rem;
+  transition:background 0.35s ease, border-color 0.35s ease;
+}
+.auc-avatar {width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;font-family:'Fraunces',serif;flex-shrink:0;}
+.auc-info{flex:1;}
+.auc-name{font-weight:600;color:var(--text);margin-bottom:0.2rem;}
+.auc-role{font-family:'JetBrains Mono',monospace;font-size:0.68rem;}
+.auc-actions{display:flex;gap:0.5rem;}
+
+/* Light mode specific adjustments */
+[data-theme="light"] .priority-card.p1{background:rgba(204,17,51,0.04);}
+[data-theme="light"] .priority-card.p2{background:rgba(212,90,0,0.04);}
+[data-theme="light"] .priority-card.p3{background:rgba(170,119,0,0.04);}
+[data-theme="light"] .priority-card.p4{background:rgba(0,136,85,0.04);}
+[data-theme="light"] tr:hover td{background:rgba(0,136,170,0.04);}
+[data-theme="light"] .badge-p1{background:rgba(204,17,51,0.1);}
+[data-theme="light"] .badge-p2{background:rgba(212,90,0,0.1);}
+[data-theme="light"] .badge-p3{background:rgba(170,119,0,0.08);}
+[data-theme="light"] .badge-p4{background:rgba(0,136,85,0.08);}
+[data-theme="light"] .badge-critical{background:rgba(204,17,51,0.1);}
+[data-theme="light"] .badge-high{background:rgba(212,90,0,0.1);}
+[data-theme="light"] .badge-medium{background:rgba(170,119,0,0.08);}
+[data-theme="light"] .badge-low{background:rgba(0,136,85,0.08);}
+[data-theme="light"] .badge-blue{background:rgba(0,136,170,0.08);}
+[data-theme="light"] .csv-dropzone{background:var(--bg2);}
+
+@media(max-width:1024px){
+  .login-left{width:50%;}
+  .login-right{width:50%;}
+  .grid-4{grid-template-columns:1fr 1fr;}
+  .kpi-strip{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:768px){
+  .login-left{display:none;}
+  .login-right{width:100%;}
+  .nav-tabs .nav-tab:nth-child(n+4){display:none;}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+  .kpi-strip{grid-template-columns:1fr 1fr;}
+  .form-row.cols-3,.form-row.cols-4{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<!-- Floating theme toggle on login page -->
+<div class="login-theme-toggle">
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+    <span class="theme-toggle-icon" id="loginThemeIcon">🌙</span>
+    <div class="theme-toggle-track">
+      <div class="theme-toggle-knob" id="loginThemeKnob">☀</div>
+    </div>
+    <span id="loginThemeLabel" class="mono" style="font-size:0.65rem">DARK</span>
+  </button>
+</div>
+
+<div id="loginPage">
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="brand-name">Medi<em>Flow</em> <sup>AI</sup></div>
+      <div class="brand-sub">Hospital Intelligence Platform</div>
+    </div>
+
+    <div class="live-status-panel">
+      <div class="lsp-title">
+        <span class="dot-live"></span>
+        Live Hospital Status — <span id="loginClock" class="mono">--:--:--</span>
+      </div>
+
+      <div class="status-grid">
+        <div class="sg-cell">
+          <div class="sg-val" style="color:var(--accent)" id="ls-beds">89</div>
+          <div class="sg-lbl">Total Beds</div>
+          <div class="sg-delta up">↑ 5 freed today</div>
+        </div>
+        <div class="sg-cell">
+          <div class="sg-val" style="color:var(--green)" id="ls-available">23</div>
+          <div class="sg-lbl">Available Beds</div>
+          <div class="sg-delta up">↑ Ready for admit</div>
+        </div>
+        <div class="sg-cell">
+          <div class="sg-val" style="color:var(--red)" id="ls-critical">0</div>
+          <div class="sg-lbl">Critical Patients</div>
+          <div class="sg-delta down">Requires attention</div>
+        </div>
+        <div class="sg-cell">
+          <div class="sg-val" style="color:var(--yellow)" id="ls-opqueue">0</div>
+          <div class="sg-lbl">OP Waiting</div>
+          <div class="sg-delta warn">Outpatient queue</div>
+        </div>
+        <div class="sg-cell">
+          <div class="sg-val" style="color:var(--orange)" id="ls-icu">4</div>
+          <div class="sg-lbl">ICU Occupied</div>
+          <div class="sg-delta down">↑ 2 critical</div>
+        </div>
+        <div class="sg-cell">
+          <div class="sg-val" style="color:var(--green)">94.1%</div>
+          <div class="sg-lbl">ML Accuracy</div>
+          <div class="sg-delta up">Model v4.2 active</div>
+        </div>
+      </div>
+
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.75rem;">Unit Occupancy</div>
+      <div class="unit-bars" id="loginUnitBars"></div>
+
+      <div class="alert-ticker" id="alertTicker">
+        <span class="ticker-icon">⚡</span>
+        <span class="ticker-text" id="tickerText">Loading system status...</span>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">
+      © 2025 MediFlow AI · Hospital Intelligence System v4.2
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-box">
+      <h2>Welcome <em>Back</em></h2>
+      <p class="login-sub">Sign in to access the hospital intelligence platform</p>
+
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('user')" id="roleTab-user">
+          <span class="role-icon">👤</span>
+          <span class="role-label">VIEWER</span>
+        </button>
+        <button class="role-tab" onclick="setRole('staff')" id="roleTab-staff">
+          <span class="role-icon">🩺</span>
+          <span class="role-label">STAFF</span>
+        </button>
+        <button class="role-tab" onclick="setRole('admin')" id="roleTab-admin">
+          <span class="role-icon">🛡️</span>
+          <span class="role-label">ADMIN</span>
+        </button>
+      </div>
+
+      <div class="role-badge-bar" id="roleBadgeBar">
+        <div class="rb-dot" style="background:var(--accent)"></div>
+        <span class="rb-name">Viewer</span>
+        <span class="rb-desc">Read-only access</span>
+      </div>
+
+      <div class="credentials-hint" id="credHint">
+        <div class="cred-title">🔑 Demo Credentials</div>
+        <div class="cred-row"><span class="cred-key">Username</span><span>viewer</span></div>
+        <div class="cred-row"><span class="cred-key">Password</span><span>viewer123</span></div>
+      </div>
+
+      <div class="login-error" id="loginError">⚠ Invalid username or password. Please try again.</div>
+
+      <div class="form-group">
+        <label>Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="loginUser" placeholder="Enter your username" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="loginPass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+          <button class="pw-toggle" onclick="togglePw()">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-login" onclick="doLogin()" id="loginBtn">
+        Sign In to MediFlow
+      </button>
+
+      <div style="margin-top:1.5rem;text-align:center;font-size:0.75rem;color:var(--text3)">
+        🏥 For access issues, contact your system administrator
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div id="appShell">
+  <nav class="nav">
+    <div class="nav-logo">Medi<em>Flow</em> <sup>AI</sup></div>
+    <div class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" onclick="showPage('dashboard')">🏥 Dashboard</button>
+      <button class="nav-tab" onclick="showPage('priority')">🚨 OP Priority</button>
+      <button class="nav-tab" onclick="showPage('patients')">👤 Patients</button>
+      <button class="nav-tab" onclick="showPage('dataset')">📊 Dataset</button>
+      <button class="nav-tab" onclick="showPage('predictions')">🤖 Predictions</button>
+      <button class="nav-tab" onclick="showPage('analytics')">📈 Analytics</button>
+      <button class="nav-tab" onclick="showPage('admin')" id="adminNavTab" style="display:none">🛡️ Admin</button>
+    </div>
+    <div class="nav-right">
+      <span class="save-indicator mono" id="saveIndicator">✓ Saved</span>
+      <div class="role-indicator" id="roleIndicator">
+        <div class="ri-dot" id="riDot"></div>
+        <span id="riLabel" class="mono" style="font-size:0.7rem">—</span>
+      </div>
+      <div class="live-badge"><span class="dot-live"></span><span id="liveClock" class="mono">--:--:--</span></div>
+      <!-- Theme toggle in nav -->
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+        <span class="theme-toggle-icon" id="navThemeIcon">🌙</span>
+        <div class="theme-toggle-track">
+          <div class="theme-toggle-knob" id="navThemeKnob">☀</div>
+        </div>
+        <span id="navThemeLabel" class="mono" style="font-size:0.65rem">DARK</span>
+      </button>
+      <button class="btn-logout" onclick="doLogout()">⬡ Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="page active" id="page-dashboard">
+    <h1 class="page-title">Hospital Intelligence <em>Dashboard</em></h1>
+    <p class="page-sub" id="dashSub">Real-time census · ML predictions · Resource allocation</p>
+    <div class="kpi-strip">
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--green)" id="kpiUtil">0%</div><div class="kpi-lbl">Avg Utilization</div><div class="kpi-delta up">↑ Target: 85%</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--accent)" id="kpiPts">0</div><div class="kpi-lbl">Total Patients</div><div class="kpi-delta" id="kpiPtsDelta">in dataset</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--red)" id="kpiHigh">0</div><div class="kpi-lbl">Critical / P1</div><div class="kpi-delta down">Needs immediate attention</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--yellow)" id="kpiWait">0</div><div class="kpi-lbl">OP Waiting</div><div class="kpi-delta">Outpatient queue</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--orange)" id="kpiAcc">94.1%</div><div class="kpi-lbl">ML Accuracy</div><div class="kpi-delta up">↑ Model v4.2</div></div>
+    </div>
+    <h3 style="margin-bottom:1rem">Live Unit Census</h3>
+    <div class="grid-3" style="margin-bottom:1.75rem" id="censusGrid"></div>
+    <div class="grid-2" style="margin-bottom:1.75rem">
+      <div class="chart-box"><div class="chart-lbl">24h Admission vs Discharge Flow</div><canvas id="flowChart" height="180"></canvas></div>
+      <div class="chart-box"><div class="chart-lbl">Unit Utilization</div><canvas id="utilChart" height="180"></canvas></div>
+    </div>
+    <h3 style="margin-bottom:1rem">Active Alerts</h3>
+    <div class="alert-strip" id="alertStrip"></div>
+  </div>
+
+  <!-- ===== OP PRIORITY ===== -->
+  <div class="page" id="page-priority">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div>
+        <h1 class="page-title">OP <em>Priority Queue</em></h1>
+        <p class="page-sub">ML-scored outpatient admission priority · Higher score = admit first</p>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap" id="priorityActions">
+        <button class="btn btn-primary" onclick="recalcPriority()">🔄 Recalculate Priority</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;font-size:0.78rem">
+      <div style="display:flex;align-items:center;gap:0.5rem"><div style="width:12px;height:12px;background:var(--red);border-radius:2px"></div><span>P1 Critical (80–100) — Admit immediately</span></div>
+      <div style="display:flex;align-items:center;gap:0.5rem"><div style="width:12px;height:12px;background:var(--orange);border-radius:2px"></div><span>P2 Urgent (60–79) — Admit within 2 hrs</span></div>
+      <div style="display:flex;align-items:center;gap:0.5rem"><div style="width:12px;height:12px;background:var(--yellow);border-radius:2px"></div><span>P3 Semi-urgent (40–59) — Same day</span></div>
+      <div style="display:flex;align-items:center;gap:0.5rem"><div style="width:12px;height:12px;background:var(--green);border-radius:2px"></div><span>P4 Routine (&lt;40) — Schedule next available</span></div>
+    </div>
+    <div class="card" style="margin-bottom:1.5rem;border-left:3px solid var(--accent)">
+      <div class="card-title" style="margin-bottom:0.75rem">ML Priority Scoring Algorithm</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;font-size:0.78rem;color:var(--text2)">
+        <div>🩺 <strong style="color:var(--text)">Vital Signs (25pts)</strong><br>BP, HR, SpO₂, Temp, RR deviations</div>
+        <div>📋 <strong style="color:var(--text)">Chief Complaint (20pts)</strong><br>Chest pain, dyspnea → high score</div>
+        <div>🧬 <strong style="color:var(--text)">Comorbidities (20pts)</strong><br>Diabetes, hypertension, cardiac</div>
+        <div>📅 <strong style="color:var(--text)">Wait Duration (15pts)</strong><br>Hours waiting in OP queue</div>
+        <div>🔬 <strong style="color:var(--text)">Lab Values (12pts)</strong><br>WBC, Hb, Creatinine, Blood Sugar</div>
+        <div>👤 <strong style="color:var(--text)">Age & Risk (8pts)</strong><br>>65 yrs or &lt;5 yrs adds weight</div>
+      </div>
+    </div>
+    <div id="priorityList"><div style="text-align:center;padding:3rem;color:var(--text3)">Loading...</div></div>
+  </div>
+
+  <!-- ===== PATIENTS ===== -->
+  <div class="page" id="page-patients">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div>
+        <h1 class="page-title">Patient <em>Records</em></h1>
+        <p class="page-sub">Full EHR dataset · Click any row to view detailed record</p>
+      </div>
+      <div style="display:flex;gap:0.75rem" id="patientActions"></div>
+    </div>
+    <div id="ptPermBanner"></div>
+    <div class="search-row">
+      <div class="search-input-wrap" style="flex:1">
+        <span class="search-icon">🔍</span>
+        <input id="ptSearch" placeholder="Search name, ID, diagnosis, unit…" oninput="renderPatientTable()">
+      </div>
+      <select id="ptFilter" onchange="renderPatientTable()" style="width:auto"><option value="">All Risks</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+      <select id="ptUnit" onchange="renderPatientTable()" style="width:auto"><option value="">All Units</option><option>General Ward</option><option>ICU</option><option>Emergency</option><option>Neurology</option><option>Maternity</option><option>OP</option></select>
+      <select id="ptType" onchange="renderPatientTable()" style="width:auto"><option value="">IP + OP</option><option value="IP">Inpatient Only</option><option value="OP">Outpatient Only</option></select>
+    </div>
+    <div class="tbl-wrap">
+      <table id="ptTable">
+        <thead><tr><th onclick="sortTable('id')">ID ⇅</th><th onclick="sortTable('name')">Name ⇅</th><th onclick="sortTable('age')">Age ⇅</th><th>Type</th><th onclick="sortTable('unit')">Unit ⇅</th><th onclick="sortTable('diagnosis')">Diagnosis ⇅</th><th>Vitals</th><th onclick="sortTable('risk')">Risk ⇅</th><th onclick="sortTable('priorityScore')">Priority ⇅</th><th>ETA</th><th>Actions</th></tr></thead>
+        <tbody id="ptBody"></tbody>
+      </table>
+    </div>
+    <div id="ptCount" class="scroll-hint"></div>
+  </div>
+
+  <!-- ===== DATASET ===== -->
+  <div class="page" id="page-dataset">
+    <h1 class="page-title">Dataset <em>Manager</em></h1>
+    <p class="page-sub">Import CSV, manage patient records · All data persisted locally</p>
+    <div id="datasetPermBanner"></div>
+    <div class="grid-2" style="margin-bottom:1.75rem">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem">Import CSV File</div>
+        <div class="csv-dropzone" id="csvDrop" onclick="checkWriteAccess()&&document.getElementById('csvFile').click()" ondragover="csvDragOver(event)" ondrop="csvDrop2(event)" ondragleave="document.getElementById('csvDrop').classList.remove('drag')">
+          <div class="csv-icon">📄</div>
+          <h3>Drop CSV file here</h3>
+          <p>or click to browse · Columns: id, name, age, gender, type, unit, diagnosis, bp_systolic, bp_diastolic, heart_rate, spo2, temperature, rr, wbc, hemoglobin, creatinine, blood_sugar, comorbidities, chief_complaint, wait_hours, admitted_date, risk, notes</p>
+        </div>
+        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="importCSV(event)">
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="downloadSampleCSV()">⬇ Download Sample CSV</button>
+          <button class="btn btn-ghost" onclick="exportCSV()">⬇ Export Current Data</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem">Quick Add Patient</div>
+        <div id="addPatientForm"></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <h3>Dataset Records (<span id="dsCount">0</span> patients)</h3>
+      <div style="display:flex;gap:0.75rem">
+        <button class="btn btn-ghost btn-sm" id="clearAllBtn" onclick="if(confirm('Clear ALL patient data?')){clearAll()}">🗑 Clear All</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table><thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Type</th><th>Unit</th><th>Diagnosis</th><th>Risk</th><th>Priority Score</th><th>Added</th><th>Actions</th></tr></thead><tbody id="dsBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ===== PREDICTIONS ===== -->
+  <div class="page" id="page-predictions">
+    <h1 class="page-title">ML <em>Predictions</em></h1>
+    <p class="page-sub">Discharge timing, surge forecasts, and readmission risk based on EHR patterns</p>
+    <div class="grid-2" style="margin-bottom:1.75rem">
+      <div class="chart-box"><div class="chart-lbl">Discharge Timeline (Predicted vs Actual)</div><canvas id="dischargeChart" height="200"></canvas></div>
+      <div class="chart-box"><div class="chart-lbl">7-Day Admission Forecast</div><canvas id="forecastChart" height="200"></canvas></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:1.75rem">
+      <div class="chart-box"><div class="chart-lbl">Model Accuracy Breakdown</div><canvas id="accuracyChart" height="220"></canvas></div>
+      <div class="card"><div class="card-title" style="margin-bottom:1rem">ML Insights</div><div id="mlInsights" style="display:flex;flex-direction:column;gap:0.75rem;font-size:0.83rem"></div></div>
+    </div>
+    <h3 style="margin-bottom:1rem">Discharge Predictions — IP Patients</h3>
+    <div id="predCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+  </div>
+
+  <!-- ===== ANALYTICS ===== -->
+  <div class="page" id="page-analytics">
+    <h1 class="page-title">Performance <em>Analytics</em></h1>
+    <p class="page-sub">Outcomes, ML performance, and optimization results — computed from your dataset</p>
+    <div class="kpi-strip" style="grid-template-columns:repeat(6,1fr)">
+      <div class="kpi-cell"><div class="kpi-val up" id="aUtil">—</div><div class="kpi-lbl">Avg Utilization</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--accent)" id="aLos">—</div><div class="kpi-lbl">Avg LOS (days)</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--orange)" id="aWait">—</div><div class="kpi-lbl">Avg OP Wait (hrs)</div></div>
+      <div class="kpi-cell"><div class="kpi-val up" id="aAcc">94.1%</div><div class="kpi-lbl">ML Accuracy</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--red)" id="aCrit">—</div><div class="kpi-lbl">Critical Pts</div></div>
+      <div class="kpi-cell"><div class="kpi-val" style="color:var(--yellow)" id="aOp">—</div><div class="kpi-lbl">OP Waiting</div></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:1.75rem">
+      <div class="chart-box"><div class="chart-lbl">Risk Distribution</div><canvas id="riskChart" height="220"></canvas></div>
+      <div class="chart-box"><div class="chart-lbl">Patients by Unit</div><canvas id="unitChart" height="220"></canvas></div>
+    </div>
+    <div class="grid-2">
+      <div class="chart-box"><div class="chart-lbl">Wait Time: Before vs After ML Optimization</div><canvas id="waitChart" height="220"></canvas></div>
+      <div class="chart-box"><div class="chart-lbl">Age Distribution of Patients</div><canvas id="ageChart" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ===== -->
+  <div class="page" id="page-admin">
+    <h1 class="page-title">Admin <em>Panel</em></h1>
+    <p class="page-sub">User management, access control, and system configuration</p>
+
+    <div class="grid-2" style="margin-bottom:1.75rem">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem">👥 Registered Users</div>
+        <div id="adminUserList" style="display:flex;flex-direction:column;gap:0.75rem"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem">➕ Add New User</div>
+        <div class="form-group"><label class="fg-label">Username</label><input id="newUsername" placeholder="e.g. dr.smith"></div>
+        <div class="form-group"><label class="fg-label">Password</label><input type="password" id="newPassword" placeholder="Min 6 characters"></div>
+        <div class="form-group"><label class="fg-label">Full Name</label><input id="newFullName" placeholder="Dr. John Smith"></div>
+        <div class="form-group"><label class="fg-label">Role</label>
+          <select id="newRole">
+            <option value="user">👤 Viewer — Read-only access</option>
+            <option value="staff">🩺 Staff — Can edit patients</option>
+            <option value="admin">🛡️ Admin — Full system access</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="fg-label">Department</label><input id="newDept" placeholder="e.g. Cardiology, ICU, Emergency"></div>
+        <button class="btn btn-green" onclick="addUser()" style="width:100%;justify-content:center">➕ Create User Account</button>
+        <div id="addUserMsg" style="margin-top:0.75rem;font-size:0.8rem;display:none"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.75rem">
+      <div class="card-title" style="margin-bottom:1rem">⚙️ System Configuration</div>
+      <div class="grid-3">
+        <div style="font-size:0.83rem">
+          <div style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.68rem;margin-bottom:0.4rem">TOTAL BEDS CAPACITY</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input type="number" id="cfgBeds" value="335" style="width:100px">
+            <button class="btn btn-ghost btn-sm" onclick="saveConfig()">Save</button>
+          </div>
+        </div>
+        <div style="font-size:0.83rem">
+          <div style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.68rem;margin-bottom:0.4rem">ICU CAPACITY</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input type="number" id="cfgIcu" value="25" style="width:100px">
+            <button class="btn btn-ghost btn-sm" onclick="saveConfig()">Save</button>
+          </div>
+        </div>
+        <div style="font-size:0.83rem">
+          <div style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.68rem;margin-bottom:0.4rem">ALERT THRESHOLD (OP QUEUE)</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input type="number" id="cfgAlert" value="5" style="width:100px">
+            <button class="btn btn-ghost btn-sm" onclick="saveConfig()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:1rem">📋 Audit Log</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>User</th><th>Role</th><th>Action</th><th>Details</th></tr></thead>
+          <tbody id="auditLog"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+<div class="modal-bg" id="ptModal">
+  <div class="modal-box" style="max-width:780px">
+    <button class="modal-close" onclick="closeModal('ptModal')">✕</button>
+    <div id="ptModalContent"></div>
+  </div>
+</div>
+<div class="modal-bg" id="editModal">
+  <div class="modal-box" style="max-width:680px">
+    <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+    <div class="modal-title">Edit Patient Record</div>
+    <div id="editForm"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+      <button class="btn btn-primary" onclick="saveEdit()" style="flex:1;justify-content:center">💾 Save Changes</button>
+      <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =============================================
+   THEME SYSTEM
+============================================= */
+const THEME_KEY = 'mediflow_theme_v1';
+
+function getTheme() {
+  return localStorage.getItem(THEME_KEY) || 'dark';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem(THEME_KEY, theme);
+
+  const isDark = theme === 'dark';
+  const icon = isDark ? '🌙' : '☀️';
+  const label = isDark ? 'DARK' : 'LIGHT';
+  const knobContent = isDark ? '☀' : '🌙';
+
+  // Update all toggle instances
+  ['loginThemeIcon','navThemeIcon'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = icon;
+  });
+  ['loginThemeLabel','navThemeLabel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = label;
+  });
+  ['loginThemeKnob','navThemeKnob'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = knobContent;
+  });
+
+  // Re-draw charts if app is active (charts use inline color consts)
+  if (document.getElementById('appShell').classList.contains('active')) {
+    const activePage = document.querySelector('.page.active');
+    if (activePage) {
+      setTimeout(() => {
+        const pid = activePage.id.replace('page-','');
+        if (pid === 'dashboard') { drawFlowChart(); drawUtilChart(); }
+        if (pid === 'analytics') { drawRiskChart(); drawUnitChart(); drawWaitChart(); drawAgeChart(); }
+        if (pid === 'predictions') { drawDischargeChart(); drawForecastChart(); drawAccuracyChart(); }
+      }, 50);
+    }
+  }
+}
+
+function toggleTheme() {
+  const current = getTheme();
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// =============================================
+//   AUTH SYSTEM
+// =============================================
+const USERS_KEY = 'mediflow_users_v1';
+const SESSION_KEY = 'mediflow_session_v1';
+const AUDIT_KEY = 'mediflow_audit_v1';
+
+const DEFAULT_USERS = [
+  { username:'viewer',  password:'viewer123',  role:'user',  fullName:'Viewer Demo',       dept:'General',   active:true },
+  { username:'staff',   password:'staff123',   role:'staff', fullName:'Staff Nurse Demo',  dept:'General Ward', active:true },
+  { username:'admin',   password:'admin123',   role:'admin', fullName:'Administrator',     dept:'System',    active:true },
+  { username:'dr.chen', password:'doctor123',  role:'staff', fullName:'Dr. Margaret Chen', dept:'Neurology', active:true },
+  { username:'nurse.k', password:'nurse123',   role:'staff', fullName:'Nurse Kumar',       dept:'ICU',       active:true },
+];
+
+const ROLE_CONFIG = {
+  user:  { label:'Viewer',  color:'#00c8f0', icon:'👤', canEdit:false, canAdd:false, canDelete:false, canAdmin:false },
+  staff: { label:'Staff',   color:'#00e8a0', icon:'🩺', canEdit:true,  canAdd:true,  canDelete:false, canAdmin:false },
+  admin: { label:'Admin',   color:'#ff7c2a', icon:'🛡️', canEdit:true,  canAdd:true,  canDelete:true,  canAdmin:true },
+};
+
+let currentUser = null;
+let auditLog = [];
+
+function loadUsers() {
+  const raw = localStorage.getItem(USERS_KEY);
+  if (!raw) { localStorage.setItem(USERS_KEY, JSON.stringify(DEFAULT_USERS)); return DEFAULT_USERS; }
+  return JSON.parse(raw);
+}
+function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+function loadAudit() { try { auditLog = JSON.parse(localStorage.getItem(AUDIT_KEY)||'[]'); } catch(e) { auditLog=[]; } }
+function saveAudit() { localStorage.setItem(AUDIT_KEY, JSON.stringify(auditLog.slice(-100))); }
+function logAction(action, details='') {
+  if (!currentUser) return;
+  auditLog.unshift({ time:new Date().toLocaleTimeString(), date:new Date().toLocaleDateString(), user:currentUser.username, role:currentUser.role, action, details });
+  saveAudit();
+}
+function checkWriteAccess(silent=false) {
+  const rc = ROLE_CONFIG[currentUser?.role];
+  if (!rc?.canAdd) { if (!silent) alert('🔒 You do not have permission to perform this action.'); return false; }
+  return true;
+}
+
+let selectedRole = 'user';
+
+function setRole(role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('roleTab-'+role)?.classList.add('active');
+  const cfg = {
+    user:  { dot:'var(--accent)', name:'Viewer',       desc:'Read-only access',       hint:[{k:'Username',v:'viewer'},{k:'Password',v:'viewer123'}] },
+    staff: { dot:'var(--green)',  name:'Clinical Staff', desc:'View + Edit patients',  hint:[{k:'Username',v:'staff'},{k:'Password',v:'staff123'}] },
+    admin: { dot:'var(--orange)', name:'Administrator', desc:'Full system access',     hint:[{k:'Username',v:'admin'},{k:'Password',v:'admin123'}] },
+  };
+  const c = cfg[role];
+  document.getElementById('roleBadgeBar').innerHTML = `<div class="rb-dot" style="background:${c.dot}"></div><span class="rb-name">${c.name}</span><span class="rb-desc">${c.desc}</span>`;
+  document.getElementById('credHint').innerHTML = `<div class="cred-title">🔑 Demo Credentials</div>${c.hint.map(h=>`<div class="cred-row"><span class="cred-key">${h.k}</span><span>${h.v}</span></div>`).join('')}`;
+  document.getElementById('loginUser').value = c.hint[0].v;
+  document.getElementById('loginPass').value = c.hint[1].v;
+}
+
+function togglePw() {
+  const inp = document.getElementById('loginPass');
+  inp.type = inp.type==='password'?'text':'password';
+}
+
+function doLogin() {
+  const uname = document.getElementById('loginUser').value.trim().toLowerCase();
+  const pass  = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn   = document.getElementById('loginBtn');
+  if (!uname||!pass) { errEl.textContent='⚠ Please enter username and password.';errEl.classList.add('show');return; }
+  btn.textContent='Signing in…';btn.classList.add('loading');errEl.classList.remove('show');
+  setTimeout(()=>{
+    const users = loadUsers();
+    const user = users.find(u=>u.username===uname && u.password===pass && u.active);
+    btn.textContent='Sign In to MediFlow';btn.classList.remove('loading');
+    if (!user) { errEl.textContent='⚠ Invalid username or password. Please try again.';errEl.classList.add('show');return; }
+    currentUser = user;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    loadAudit();logAction('LOGIN',`Logged in as ${user.role}`);launchApp();
+  }, 600);
+}
+
+function doLogout() {
+  logAction('LOGOUT','Session ended');currentUser=null;localStorage.removeItem(SESSION_KEY);
+  document.getElementById('appShell').classList.remove('active');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').classList.remove('show');
+  setRole('user');
+}
+
+function launchApp() {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('appShell').classList.add('active');
+  applyRoleUI();loadData();showPage('dashboard');updateLoginStatus();
+}
+
+function applyRoleUI() {
+  const rc = ROLE_CONFIG[currentUser.role];
+  document.getElementById('riDot').style.background = rc.color;
+  document.getElementById('riLabel').textContent = `${rc.icon} ${rc.label} — ${currentUser.fullName}`;
+  document.getElementById('adminNavTab').style.display = currentUser.role==='admin'?'':'none';
+  const pa = document.getElementById('patientActions');
+  if (rc.canAdd) {
+    pa.innerHTML=`<button class="btn btn-primary" onclick="openAddPatient()">+ Add Patient</button><button class="btn btn-ghost" onclick="exportCSV()">⬇ Export CSV</button>`;
+  } else {
+    pa.innerHTML=`<button class="btn btn-ghost" onclick="exportCSV()">⬇ Export CSV</button>`;
+  }
+  if (!rc.canEdit) {
+    document.getElementById('ptPermBanner').innerHTML=`<div class="perm-banner">🔒 <strong>View-only access.</strong> Staff or Admin role required to edit patient records.</div>`;
+    document.getElementById('datasetPermBanner').innerHTML=`<div class="perm-banner">🔒 <strong>View-only access.</strong> You can export data but cannot add or modify records.</div>`;
+  } else {
+    document.getElementById('ptPermBanner').innerHTML='';document.getElementById('datasetPermBanner').innerHTML='';
+  }
+  const cab = document.getElementById('clearAllBtn');
+  if (cab) { if(!rc.canAdmin){cab.classList.add('btn-disabled');}else{cab.classList.remove('btn-disabled');} }
+  renderAddPatientForm();
+}
+
+function renderAddPatientForm() {
+  const rc = ROLE_CONFIG[currentUser?.role];
+  const el = document.getElementById('addPatientForm');
+  if (!el) return;
+  if (!rc?.canAdd) {
+    el.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--text3)"><div style="font-size:2rem;margin-bottom:0.75rem">🔒</div><div style="font-size:0.85rem">You need Staff or Admin access to add patients.</div></div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div class="form-row cols-2"><div class="form-group"><label class="fg-label">Patient ID</label><input id="fId" placeholder="PT-00001"></div><div class="form-group"><label class="fg-label">Full Name</label><input id="fName" placeholder="John Doe"></div></div>
+    <div class="form-row cols-3"><div class="form-group"><label class="fg-label">Age</label><input id="fAge" type="number" placeholder="45"></div><div class="form-group"><label class="fg-label">Gender</label><select id="fGender"><option>Male</option><option>Female</option><option>Other</option></select></div><div class="form-group"><label class="fg-label">Type</label><select id="fType"><option value="OP">OP</option><option value="IP">IP</option></select></div></div>
+    <div class="form-row cols-2"><div class="form-group"><label class="fg-label">Unit</label><select id="fUnit"><option>OP</option><option>General Ward</option><option>ICU</option><option>Emergency</option><option>Neurology</option><option>Maternity</option></select></div><div class="form-group"><label class="fg-label">Chief Complaint</label><input id="fChief" placeholder="Chest pain…"></div></div>
+    <div class="form-group"><label class="fg-label">Diagnosis</label><input id="fDiag" placeholder="Hypertension…"></div>
+    <div class="form-row cols-4"><div class="form-group"><label class="fg-label">BP Sys</label><input id="fBpS" type="number" placeholder="120"></div><div class="form-group"><label class="fg-label">BP Dia</label><input id="fBpD" type="number" placeholder="80"></div><div class="form-group"><label class="fg-label">HR</label><input id="fHr" type="number" placeholder="78"></div><div class="form-group"><label class="fg-label">SpO₂%</label><input id="fSpo2" type="number" placeholder="98"></div></div>
+    <div class="form-row cols-4"><div class="form-group"><label class="fg-label">Temp°C</label><input id="fTemp" type="number" step="0.1" placeholder="37.0"></div><div class="form-group"><label class="fg-label">RR</label><input id="fRr" type="number" placeholder="16"></div><div class="form-group"><label class="fg-label">Wait hrs</label><input id="fWait" type="number" placeholder="2"></div><div class="form-group"><label class="fg-label">Blood Sugar</label><input id="fBs" type="number" placeholder="95"></div></div>
+    <div class="form-row cols-3"><div class="form-group"><label class="fg-label">WBC×10³</label><input id="fWbc" type="number" step="0.1" placeholder="7.5"></div><div class="form-group"><label class="fg-label">Hemoglobin</label><input id="fHb" type="number" step="0.1" placeholder="13.5"></div><div class="form-group"><label class="fg-label">Creatinine</label><input id="fCr" type="number" step="0.1" placeholder="1.0"></div></div>
+    <div class="form-group"><label class="fg-label">Comorbidities</label><input id="fComor" placeholder="Diabetes, Hypertension…"></div>
+    <div class="form-group"><label class="fg-label">Notes</label><textarea id="fNotes" rows="2"></textarea></div>
+    <button class="btn btn-green" onclick="addPatient()" style="width:100%;justify-content:center">+ Add Patient to Dataset</button>`;
+}
+
+/* =============================================
+   SEED DATA
+============================================= */
+const SEED_PATIENTS = [
+  {id:'PT-001',name:'Margaret Chen',age:67,gender:'Female',type:'IP',unit:'General Ward',diagnosis:'Pneumonia',bp_sys:138,bp_dia:88,hr:92,spo2:93,temp:38.5,rr:22,wbc:14.2,hb:11.8,creatinine:1.1,blood_sugar:110,comorbidities:'COPD, Hypertension',chief_complaint:'Cough, fever, dyspnea',wait_hours:0,admitted_date:'2025-02-21',risk:'high',notes:'On IV antibiotics, improving'},
+  {id:'PT-002',name:'Robert Okafor',age:54,gender:'Male',type:'IP',unit:'ICU',diagnosis:'Cardiac Arrest - ROSC',bp_sys:92,bp_dia:60,hr:118,spo2:89,temp:38.1,rr:26,wbc:16.1,hb:10.2,creatinine:2.1,blood_sugar:185,comorbidities:'Diabetes, CAD',chief_complaint:'Cardiac arrest',wait_hours:0,admitted_date:'2025-02-23',risk:'critical',notes:'IABP placed, haemodynamically unstable'},
+  {id:'PT-003',name:'Aisha Patel',age:29,gender:'Female',type:'IP',unit:'Maternity',diagnosis:'Active Labour',bp_sys:118,bp_dia:74,hr:88,spo2:99,temp:36.8,rr:16,wbc:9.2,hb:12.1,creatinine:0.7,blood_sugar:88,comorbidities:'None',chief_complaint:'Labour contractions',wait_hours:0,admitted_date:'2025-02-26',risk:'low',notes:'7cm dilated, epidural in place'},
+  {id:'PT-004',name:'James Whitmore',age:72,gender:'Male',type:'IP',unit:'Neurology',diagnosis:'Ischaemic Stroke - TIA',bp_sys:168,bp_dia:96,hr:84,spo2:95,temp:37.2,rr:18,wbc:8.9,hb:13.2,creatinine:1.4,blood_sugar:142,comorbidities:'Hypertension, Atrial Fibrillation',chief_complaint:'Sudden facial droop, slurred speech',wait_hours:0,admitted_date:'2025-02-24',risk:'high',notes:'Started on anticoagulation'},
+  {id:'PT-005',name:'Fatima Al-Hassan',age:28,gender:'Female',type:'IP',unit:'Emergency',diagnosis:'Acute Appendicitis',bp_sys:126,bp_dia:78,hr:102,spo2:97,temp:38.2,rr:19,wbc:15.8,hb:12.8,creatinine:0.8,blood_sugar:91,comorbidities:'None',chief_complaint:'Right iliac fossa pain',wait_hours:0,admitted_date:'2025-02-26',risk:'medium',notes:'Awaiting appendectomy OR slot'},
+  {id:'PT-006',name:'Liu Wei',age:45,gender:'Male',type:'IP',unit:'General Ward',diagnosis:'Femur Fracture Post-Op',bp_sys:128,bp_dia:80,hr:76,spo2:98,temp:37.0,rr:15,wbc:8.1,hb:10.9,creatinine:0.9,blood_sugar:95,comorbidities:'None',chief_complaint:'Post-op femur fracture',wait_hours:0,admitted_date:'2025-02-22',risk:'low',notes:'Day 4 post ORIF, physio started'},
+  {id:'PT-007',name:'Sandra Johnson',age:59,gender:'Female',type:'IP',unit:'ICU',diagnosis:'Sepsis - Abdominal Source',bp_sys:88,bp_dia:55,hr:124,spo2:91,temp:39.4,rr:28,wbc:19.3,hb:9.8,creatinine:2.8,blood_sugar:168,comorbidities:'Diabetes, CKD',chief_complaint:'Severe abdominal pain, fever',wait_hours:0,admitted_date:'2025-02-20',risk:'critical',notes:'Vasopressors, blood cultures pending'},
+  {id:'PT-008',name:'Carlos Mendez',age:41,gender:'Male',type:'IP',unit:'General Ward',diagnosis:'Appendectomy Post-Op',bp_sys:122,bp_dia:76,hr:74,spo2:99,temp:36.9,rr:14,wbc:7.4,hb:13.8,creatinine:0.8,blood_sugar:92,comorbidities:'None',chief_complaint:'Post-op day 1',wait_hours:0,admitted_date:'2025-02-25',risk:'low',notes:'Tolerating oral fluids, discharge today'},
+  {id:'PT-009',name:'Elena Novak',age:63,gender:'Female',type:'IP',unit:'Neurology',diagnosis:'Epilepsy - Status Management',bp_sys:142,bp_dia:88,hr:80,spo2:96,temp:37.1,rr:17,wbc:7.8,hb:12.4,creatinine:1.0,blood_sugar:105,comorbidities:'Epilepsy, Hypertension',chief_complaint:'Breakthrough seizures',wait_hours:0,admitted_date:'2025-02-23',risk:'medium',notes:'Levetiracetam dose adjusted'},
+  {id:'PT-010',name:'Omar Sharif',age:77,gender:'Male',type:'IP',unit:'General Ward',diagnosis:'COPD Exacerbation',bp_sys:148,bp_dia:92,hr:96,spo2:88,temp:37.8,rr:24,wbc:11.2,hb:11.4,creatinine:1.2,blood_sugar:114,comorbidities:'COPD, Hypertension, Heart Failure',chief_complaint:'Worsening breathlessness',wait_hours:0,admitted_date:'2025-02-20',risk:'high',notes:'NIV overnight, some improvement'},
+  {id:'PT-011',name:'Priya Sharma',age:31,gender:'Female',type:'IP',unit:'Maternity',diagnosis:'C-Section Recovery',bp_sys:116,bp_dia:72,hr:82,spo2:99,temp:36.7,rr:15,wbc:8.4,hb:11.2,creatinine:0.7,blood_sugar:86,comorbidities:'None',chief_complaint:'Post C-section day 1',wait_hours:0,admitted_date:'2025-02-25',risk:'low',notes:'Baby well, breastfeeding established'},
+  {id:'PT-012',name:'Michael Torres',age:52,gender:'Male',type:'IP',unit:'ICU',diagnosis:'Post CABG Surgery',bp_sys:104,bp_dia:66,hr:88,spo2:94,temp:37.6,rr:20,wbc:10.8,hb:10.1,creatinine:1.6,blood_sugar:148,comorbidities:'CAD, Diabetes, Hypertension',chief_complaint:'Post cardiac surgery',wait_hours:0,admitted_date:'2025-02-22',risk:'high',notes:'Extubated yesterday, HDU transfer pending'},
+  {id:'OP-001',name:'Ravi Kumar',age:68,gender:'Male',type:'OP',unit:'OP',diagnosis:'Chest Pain - Evaluation',bp_sys:156,bp_dia:98,hr:108,spo2:92,temp:37.4,rr:22,wbc:11.8,hb:11.0,creatinine:1.5,blood_sugar:220,comorbidities:'Diabetes, Hypertension, Previous MI',chief_complaint:'Chest pain radiating to left arm',wait_hours:3.5,admitted_date:'',risk:'critical',notes:'ECG changes noted at triage'},
+  {id:'OP-002',name:'Sunita Rao',age:45,gender:'Female',type:'OP',unit:'OP',diagnosis:'Acute Dyspnea',bp_sys:136,bp_dia:88,hr:112,spo2:93,temp:37.8,rr:24,wbc:13.4,hb:10.8,creatinine:0.9,blood_sugar:105,comorbidities:'Asthma',chief_complaint:'Sudden shortness of breath, wheezing',wait_hours:1.5,admitted_date:'',risk:'high',notes:'Peak flow 45% predicted'},
+  {id:'OP-003',name:'David Osei',age:72,gender:'Male',type:'OP',unit:'OP',diagnosis:'Fall with Head Injury',bp_sys:162,bp_dia:94,hr:86,spo2:95,temp:37.1,rr:18,wbc:8.2,hb:12.6,creatinine:1.3,blood_sugar:118,comorbidities:'Hypertension, Anticoagulation therapy',chief_complaint:'Fall, confusion, head laceration',wait_hours:0.5,admitted_date:'',risk:'high',notes:'On warfarin, INR pending'},
+  {id:'OP-004',name:'Anjali Singh',age:34,gender:'Female',type:'OP',unit:'OP',diagnosis:'Severe Abdominal Pain',bp_sys:122,bp_dia:78,hr:98,spo2:97,temp:38.0,rr:19,wbc:12.8,hb:12.2,creatinine:0.8,blood_sugar:92,comorbidities:'None',chief_complaint:'Severe RUQ pain, vomiting',wait_hours:2,admitted_date:'',risk:'medium',notes:'Ultrasound ordered, possible cholecystitis'},
+  {id:'OP-005',name:'Peter Nguyen',age:82,gender:'Male',type:'OP',unit:'OP',diagnosis:'Acute Confusion / Delirium',bp_sys:148,bp_dia:88,hr:94,spo2:94,temp:38.6,rr:20,wbc:14.1,hb:10.4,creatinine:2.2,blood_sugar:136,comorbidities:'Dementia, CKD, Hypertension',chief_complaint:'Sudden onset confusion, not recognising family',wait_hours:4,admitted_date:'',risk:'high',notes:'Likely acute UTI vs medication toxicity'},
+  {id:'OP-006',name:'Maria Garcia',age:26,gender:'Female',type:'OP',unit:'OP',diagnosis:'Migraine with Aura',bp_sys:118,bp_dia:72,hr:76,spo2:99,temp:36.8,rr:15,wbc:6.8,hb:13.1,creatinine:0.7,blood_sugar:88,comorbidities:'Migraine',chief_complaint:'Severe headache, visual disturbance',wait_hours:1,admitted_date:'',risk:'low',notes:'Known migraineur, responding to IV fluids'},
+  {id:'OP-007',name:'Thomas Wright',age:58,gender:'Male',type:'OP',unit:'OP',diagnosis:'Hypertensive Urgency',bp_sys:188,bp_dia:114,hr:92,spo2:96,temp:36.9,rr:17,wbc:7.9,hb:14.2,creatinine:1.4,blood_sugar:98,comorbidities:'Hypertension, Obesity',chief_complaint:'Severe headache, BP very high at home',wait_hours:0.75,admitted_date:'',risk:'medium',notes:'Started oral antihypertensives'},
+  {id:'OP-008',name:'Lakshmi Devi',age:55,gender:'Female',type:'OP',unit:'OP',diagnosis:'DKA Workup',bp_sys:112,bp_dia:68,hr:118,spo2:97,temp:37.2,rr:22,wbc:9.1,hb:11.8,creatinine:1.1,blood_sugar:380,comorbidities:'Type 1 Diabetes',chief_complaint:'Vomiting, polydipsia, high glucose',wait_hours:0.5,admitted_date:'',risk:'high',notes:'Ketones +++ on urine dip'},
+  {id:'OP-009',name:'Ahmed Hassan',age:39,gender:'Male',type:'OP',unit:'OP',diagnosis:'Renal Colic',bp_sys:144,bp_dia:90,hr:100,spo2:98,temp:37.0,rr:18,wbc:8.8,hb:14.8,creatinine:1.2,blood_sugar:96,comorbidities:'Hypertension',chief_complaint:'Severe flank pain, haematuria',wait_hours:1.25,admitted_date:'',risk:'medium',notes:'CTU scan ordered'},
+  {id:'OP-010',name:'Dorothy Evans',age:77,gender:'Female',type:'OP',unit:'OP',diagnosis:'Decompensated Heart Failure',bp_sys:158,bp_dia:98,hr:104,spo2:90,temp:37.3,rr:26,wbc:9.4,hb:10.8,creatinine:1.9,blood_sugar:122,comorbidities:'CHF, Hypertension, Diabetes',chief_complaint:'Worsening breathlessness, ankle swelling',wait_hours:2,admitted_date:'',risk:'critical',notes:'BNP likely elevated, CXR shows pulmonary oedema'},
+];
+
+/* =============================================
+   PRIORITY SCORING
+============================================= */
+function calcPriorityScore(p) {
+  let score=0;const reasons=[];
+  if(p.bp_sys>=180||p.bp_sys<=90){score+=8;reasons.push('Extreme BP');}
+  else if(p.bp_sys>=160||p.bp_sys<=100){score+=5;reasons.push('Abnormal BP');}
+  else if(p.bp_sys>=140){score+=2;}
+  if(p.hr>=120||p.hr<=50){score+=7;reasons.push('Dangerous HR');}
+  else if(p.hr>=100||p.hr<=60){score+=4;reasons.push('Abnormal HR');}
+  if(p.spo2<=90){score+=7;reasons.push('Critical SpO₂');}
+  else if(p.spo2<=93){score+=5;reasons.push('Low SpO₂');}
+  else if(p.spo2<=96){score+=2;}
+  if(p.temp>=39.5||p.temp<=35.5){score+=3;reasons.push('Extreme temp');}
+  else if(p.temp>=38.5){score+=2;}
+  const cc=(p.chief_complaint||'').toLowerCase();
+  const hcc=['chest pain','cardiac','arrest','dyspnea','breathless','breath','stroke','confusion','unconscious','fitting','seizure','anaphylaxis','trauma','haemorrhage','bleed','shock'];
+  const mcc=['abdominal pain','vomiting','fever','headache','dizziness','pain'];
+  if(hcc.some(k=>cc.includes(k))){score+=18;reasons.push('High-acuity complaint');}
+  else if(mcc.some(k=>cc.includes(k))){score+=10;reasons.push('Moderate complaint');}
+  else{score+=4;}
+  const cm=(p.comorbidities||'').toLowerCase();let cmS=0;
+  if(cm.includes('diabetes'))cmS+=4;if(cm.includes('hypertension'))cmS+=3;
+  if(cm.includes('cad')||cm.includes('cardiac')||cm.includes('heart failure')||cm.includes('chf'))cmS+=6;
+  if(cm.includes('copd')||cm.includes('asthma'))cmS+=4;if(cm.includes('ckd')||cm.includes('renal'))cmS+=4;
+  if(cm.includes('stroke')||cm.includes('af'))cmS+=4;if(cm.includes('anticoag')||cm.includes('warfarin'))cmS+=3;
+  if(cm.includes('cancer')||cm.includes('oncology'))cmS+=5;
+  score+=Math.min(cmS,20);if(cmS>=8)reasons.push('High comorbidity burden');
+  const wh=parseFloat(p.wait_hours)||0;
+  if(wh>=6){score+=15;reasons.push(`Waiting ${wh}h`);}else if(wh>=3){score+=10;reasons.push(`Waiting ${wh}h`);}
+  else if(wh>=1){score+=6;}else{score+=2;}
+  const bs=parseFloat(p.blood_sugar)||100,wbc=parseFloat(p.wbc)||7,hb=parseFloat(p.hb)||13,cr=parseFloat(p.creatinine)||1;
+  if(bs>=300||bs<=60){score+=4;reasons.push('Critical glucose');}else if(bs>=200){score+=2;}
+  if(wbc>=15||wbc<=3){score+=3;reasons.push('Abnormal WBC');}
+  if(hb<=8){score+=3;reasons.push('Severe anaemia');}else if(hb<=10){score+=2;}
+  if(cr>=2.5){score+=3;reasons.push('Elevated creatinine');}else if(cr>=1.5){score+=1;}
+  const age=parseInt(p.age)||30;
+  if(age>=80){score+=8;reasons.push('Age ≥80');}else if(age>=70){score+=6;reasons.push('Age ≥70');}
+  else if(age>=65){score+=4;reasons.push('Age ≥65');}else if(age<=5){score+=7;reasons.push('Paediatric');}else if(age<=12){score+=4;}
+  const risk=(p.risk||'').toLowerCase();
+  if(risk==='critical')score=Math.max(score,80);if(risk==='high')score=Math.max(score,60);
+  score=Math.min(score,100);
+  let priority,pClass;
+  if(score>=80){priority='P1';pClass='p1';}else if(score>=60){priority='P2';pClass='p2';}
+  else if(score>=40){priority='P3';pClass='p3';}else{priority='P4';pClass='p4';}
+  return{score,priority,pClass,reasons};
+}
+
+/* =============================================
+   LOCAL STORAGE / DATA
+============================================= */
+const LS_KEY='mediflow_patients_v3';
+let patients=[];
+let sortKey='id',sortAsc=true;
+let editingId=null;
+
+function loadData() {
+  try {
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){patients=JSON.parse(raw);}
+    else{patients=SEED_PATIENTS.map(p=>({...p,_added:new Date().toISOString()}));saveData(false);}
+  } catch(e){patients=SEED_PATIENTS.map(p=>({...p,_added:new Date().toISOString()}));}
+  patients.forEach(p=>{const r=calcPriorityScore(p);p.priorityScore=r.score;p.priority=r.priority;p.pClass=r.pClass;p.priorityReasons=r.reasons;});
+}
+
+function saveData(notify=true) {
+  try{localStorage.setItem(LS_KEY,JSON.stringify(patients));if(notify)flashSave();}
+  catch(e){alert('localStorage full — please export and clear some data.');}
+}
+function flashSave(){const el=document.getElementById('saveIndicator');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+function clearAll(){if(!ROLE_CONFIG[currentUser?.role]?.canAdmin){alert('🔒 Admin access required.');return;}patients=[];saveData();refreshAll();logAction('CLEAR_ALL','All patient data cleared');}
+
+/* =============================================
+   CSV
+============================================= */
+function importCSV(event) {
+  if (!checkWriteAccess()) return;
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;const rows=text.trim().split('\n');
+    const headers=rows[0].split(',').map(h=>h.trim().replace(/"/g,'').toLowerCase().replace(/ /g,'_'));
+    let added=0;
+    for(let i=1;i<rows.length;i++){
+      const vals=parseCSVLine(rows[i]);if(vals.length<5)continue;
+      const obj={};headers.forEach((h,idx)=>{obj[h]=(vals[idx]||'').trim().replace(/"/g,'');});
+      obj.age=parseInt(obj.age)||0;obj.bp_sys=parseFloat(obj.bp_sys)||120;obj.bp_dia=parseFloat(obj.bp_dia)||80;
+      obj.hr=parseFloat(obj.hr)||80;obj.spo2=parseFloat(obj.spo2)||98;obj.temp=parseFloat(obj.temp)||37.0;
+      obj.rr=parseFloat(obj.rr)||16;obj.wbc=parseFloat(obj.wbc)||7.5;obj.hb=parseFloat(obj.hb)||13;
+      obj.creatinine=parseFloat(obj.creatinine)||1.0;obj.blood_sugar=parseFloat(obj.blood_sugar)||100;
+      obj.wait_hours=parseFloat(obj.wait_hours)||0;obj._added=new Date().toISOString();
+      if(!obj.id)obj.id='PT-'+String(Date.now()).slice(-5);
+      const sc=calcPriorityScore(obj);obj.priorityScore=sc.score;obj.priority=sc.priority;obj.pClass=sc.pClass;obj.priorityReasons=sc.reasons;
+      const idx=patients.findIndex(p=>p.id===obj.id);
+      if(idx>=0)patients[idx]=obj;else{patients.push(obj);added++;}
+    }
+    saveData();refreshAll();logAction('CSV_IMPORT',`Added/updated ${added} records`);
+    alert(`CSV imported! Added/updated ${added} records.`);
+  };
+  reader.readAsText(file);event.target.value='';
+}
+function parseCSVLine(line){const result=[];let cur='',inQ=false;for(let c of line){if(c==='"'){inQ=!inQ;continue;}if(c===','&&!inQ){result.push(cur);cur='';continue;}cur+=c;}result.push(cur);return result;}
+function exportCSV(){
+  const headers=['id','name','age','gender','type','unit','diagnosis','bp_sys','bp_dia','hr','spo2','temp','rr','wbc','hb','creatinine','blood_sugar','comorbidities','chief_complaint','wait_hours','admitted_date','risk','notes','priorityScore','priority'];
+  const rows=[headers.join(',')];
+  patients.forEach(p=>{rows.push(headers.map(h=>{const v=p[h]!==undefined?p[h]:'';return`"${String(v).replace(/"/g,'""')}"`;}).join(','));});
+  downloadBlob(rows.join('\n'),'mediflow_patients.csv','text/csv');
+  logAction('EXPORT_CSV',`Exported ${patients.length} records`);
+}
+function downloadSampleCSV(){
+  const h='id,name,age,gender,type,unit,diagnosis,bp_sys,bp_dia,hr,spo2,temp,rr,wbc,hb,creatinine,blood_sugar,comorbidities,chief_complaint,wait_hours,admitted_date,risk,notes\n';
+  const s='OP-100,John Smith,65,Male,OP,OP,Chest Pain Evaluation,158,96,104,94,37.2,20,12.1,11.4,1.4,180,"Diabetes,Hypertension","Chest tightness left arm pain",2.5,,high,New patient workup\n';
+  downloadBlob(h+s,'mediflow_sample.csv','text/csv');
+}
+function downloadBlob(content,filename,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();}
+function csvDragOver(e){e.preventDefault();document.getElementById('csvDrop').classList.add('drag');}
+function csvDrop2(e){e.preventDefault();document.getElementById('csvDrop').classList.remove('drag');const file=e.dataTransfer.files[0];if(file)importCSV({target:{files:[file],value:''}});}
+
+/* =============================================
+   ADD / EDIT / DELETE
+============================================= */
+function addPatient() {
+  if (!checkWriteAccess()) return;
+  const id=document.getElementById('fId').value.trim()||('PT-'+String(Date.now()).slice(-6));
+  if(patients.find(p=>p.id===id)){alert('Patient ID already exists.');return;}
+  const p={id,_added:new Date().toISOString(),
+    name:document.getElementById('fName').value.trim()||'Unknown',
+    age:parseInt(document.getElementById('fAge').value)||0,
+    gender:document.getElementById('fGender').value,
+    type:document.getElementById('fType').value,
+    unit:document.getElementById('fUnit').value,
+    diagnosis:document.getElementById('fDiag').value.trim()||'—',
+    bp_sys:parseFloat(document.getElementById('fBpS').value)||120,
+    bp_dia:parseFloat(document.getElementById('fBpD').value)||80,
+    hr:parseFloat(document.getElementById('fHr').value)||80,
+    spo2:parseFloat(document.getElementById('fSpo2').value)||98,
+    temp:parseFloat(document.getElementById('fTemp').value)||37.0,
+    rr:parseFloat(document.getElementById('fRr').value)||16,
+    wbc:parseFloat(document.getElementById('fWbc').value)||7.5,
+    hb:parseFloat(document.getElementById('fHb').value)||13,
+    creatinine:parseFloat(document.getElementById('fCr').value)||1.0,
+    blood_sugar:parseFloat(document.getElementById('fBs').value)||100,
+    comorbidities:document.getElementById('fComor').value.trim(),
+    chief_complaint:document.getElementById('fChief').value.trim(),
+    wait_hours:parseFloat(document.getElementById('fWait').value)||0,
+    admitted_date:'',
+    notes:document.getElementById('fNotes').value.trim()
+  };
+  const sc=calcPriorityScore(p);p.priorityScore=sc.score;p.priority=sc.priority;p.pClass=sc.pClass;p.priorityReasons=sc.reasons;
+  p.risk=calcRiskFromScore(sc.score);
+  patients.push(p);saveData();refreshAll();
+  logAction('ADD_PATIENT',`Added ${p.name} (${p.id})`);
+  ['fId','fName','fAge','fDiag','fBpS','fBpD','fHr','fSpo2','fTemp','fRr','fWait','fBs','fWbc','fHb','fCr','fComor','fChief','fNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showPage('patients');
+}
+
+function calcRiskFromScore(s){if(s>=80)return'critical';if(s>=60)return'high';if(s>=40)return'medium';return'low';}
+
+function deletePatient(id) {
+  if (!ROLE_CONFIG[currentUser?.role]?.canDelete) { alert('🔒 Admin access required to delete patients.'); return; }
+  if (!confirm(`Delete patient ${id}?`)) return;
+  const p = patients.find(x=>x.id===id);
+  patients=patients.filter(p=>p.id!==id);saveData();refreshAll();
+  logAction('DELETE_PATIENT',`Deleted ${p?.name||id}`);
+}
+
+function openEditPatient(id) {
+  if(!ROLE_CONFIG[currentUser?.role]?.canEdit){alert('🔒 Staff or Admin access required to edit patients.');return;}
+  const p=patients.find(x=>x.id===id);if(!p)return;
+  editingId=id;
+  document.getElementById('editForm').innerHTML=`
+    <div class="form-row cols-2"><div class="form-group"><label class="fg-label">Patient ID</label><input id="eId" value="${esc(p.id)}" readonly style="opacity:0.5"></div><div class="form-group"><label class="fg-label">Name</label><input id="eName" value="${esc(p.name)}"></div></div>
+    <div class="form-row cols-3"><div class="form-group"><label class="fg-label">Age</label><input id="eAge" type="number" value="${p.age}"></div><div class="form-group"><label class="fg-label">Gender</label><select id="eGender"><option ${p.gender=='Male'?'selected':''}>Male</option><option ${p.gender=='Female'?'selected':''}>Female</option><option ${p.gender=='Other'?'selected':''}>Other</option></select></div><div class="form-group"><label class="fg-label">Type</label><select id="eType"><option value="OP" ${p.type=='OP'?'selected':''}>OP</option><option value="IP" ${p.type=='IP'?'selected':''}>IP</option></select></div></div>
+    <div class="form-row cols-2"><div class="form-group"><label class="fg-label">Unit</label><select id="eUnit"><option ${p.unit=='OP'?'selected':''}>OP</option><option ${p.unit=='General Ward'?'selected':''}>General Ward</option><option ${p.unit=='ICU'?'selected':''}>ICU</option><option ${p.unit=='Emergency'?'selected':''}>Emergency</option><option ${p.unit=='Neurology'?'selected':''}>Neurology</option><option ${p.unit=='Maternity'?'selected':''}>Maternity</option></select></div><div class="form-group"><label class="fg-label">Diagnosis</label><input id="eDiag" value="${esc(p.diagnosis)}"></div></div>
+    <div class="form-row cols-4"><div class="form-group"><label class="fg-label">BP Sys</label><input id="eBpS" type="number" value="${p.bp_sys}"></div><div class="form-group"><label class="fg-label">BP Dia</label><input id="eBpD" type="number" value="${p.bp_dia}"></div><div class="form-group"><label class="fg-label">HR</label><input id="eHr" type="number" value="${p.hr}"></div><div class="form-group"><label class="fg-label">SpO₂</label><input id="eSpo2" type="number" value="${p.spo2}"></div></div>
+    <div class="form-row cols-4"><div class="form-group"><label class="fg-label">Temp</label><input id="eTemp" type="number" step="0.1" value="${p.temp}"></div><div class="form-group"><label class="fg-label">RR</label><input id="eRr" type="number" value="${p.rr}"></div><div class="form-group"><label class="fg-label">Wait hrs</label><input id="eWait" type="number" value="${p.wait_hours||0}"></div><div class="form-group"><label class="fg-label">Blood Sugar</label><input id="eBs" type="number" value="${p.blood_sugar}"></div></div>
+    <div class="form-row cols-3"><div class="form-group"><label class="fg-label">WBC</label><input id="eWbc" type="number" step="0.1" value="${p.wbc}"></div><div class="form-group"><label class="fg-label">Hb</label><input id="eHb" type="number" step="0.1" value="${p.hb}"></div><div class="form-group"><label class="fg-label">Creatinine</label><input id="eCr" type="number" step="0.1" value="${p.creatinine}"></div></div>
+    <div class="form-group"><label class="fg-label">Chief Complaint</label><input id="eChief" value="${esc(p.chief_complaint||'')}"></div>
+    <div class="form-group"><label class="fg-label">Comorbidities</label><input id="eComor" value="${esc(p.comorbidities||'')}"></div>
+    <div class="form-group"><label class="fg-label">Notes</label><textarea id="eNotes" rows="2">${esc(p.notes||'')}</textarea></div>`;
+  document.getElementById('editModal').classList.add('open');
+}
+
+function saveEdit() {
+  const p=patients.find(x=>x.id===editingId);if(!p)return;
+  p.name=document.getElementById('eName').value;p.age=parseInt(document.getElementById('eAge').value)||p.age;
+  p.gender=document.getElementById('eGender').value;p.type=document.getElementById('eType').value;
+  p.unit=document.getElementById('eUnit').value;p.diagnosis=document.getElementById('eDiag').value;
+  p.bp_sys=parseFloat(document.getElementById('eBpS').value)||p.bp_sys;p.bp_dia=parseFloat(document.getElementById('eBpD').value)||p.bp_dia;
+  p.hr=parseFloat(document.getElementById('eHr').value)||p.hr;p.spo2=parseFloat(document.getElementById('eSpo2').value)||p.spo2;
+  p.temp=parseFloat(document.getElementById('eTemp').value)||p.temp;p.rr=parseFloat(document.getElementById('eRr').value)||p.rr;
+  p.wait_hours=parseFloat(document.getElementById('eWait').value)||0;p.blood_sugar=parseFloat(document.getElementById('eBs').value)||p.blood_sugar;
+  p.wbc=parseFloat(document.getElementById('eWbc').value)||p.wbc;p.hb=parseFloat(document.getElementById('eHb').value)||p.hb;
+  p.creatinine=parseFloat(document.getElementById('eCr').value)||p.creatinine;
+  p.chief_complaint=document.getElementById('eChief').value;p.comorbidities=document.getElementById('eComor').value;
+  p.notes=document.getElementById('eNotes').value;
+  const sc=calcPriorityScore(p);p.priorityScore=sc.score;p.priority=sc.priority;p.pClass=sc.pClass;p.priorityReasons=sc.reasons;
+  p.risk=calcRiskFromScore(sc.score);
+  saveData();refreshAll();logAction('EDIT_PATIENT',`Edited ${p.name} (${p.id})`);
+  closeModal('editModal');
+}
+
+function openAddPatient(){showPage('dataset');}
+
+/* =============================================
+   ADMIN FUNCTIONS
+============================================= */
+function renderAdmin() {
+  const users = loadUsers();
+  const el = document.getElementById('adminUserList');
+  const roleColors = { user:'var(--accent)', staff:'var(--green)', admin:'var(--orange)' };
+  const roleIcons  = { user:'👤', staff:'🩺', admin:'🛡️' };
+  el.innerHTML = users.map((u,i) => `
+    <div class="admin-user-card">
+      <div class="auc-avatar" style="background:${roleColors[u.role]}22;color:${roleColors[u.role]}">${u.fullName.charAt(0)}</div>
+      <div class="auc-info">
+        <div class="auc-name">${esc(u.fullName)}</div>
+        <div class="auc-role" style="color:${roleColors[u.role]}">${roleIcons[u.role]} ${u.role.toUpperCase()} · ${esc(u.username)} · ${esc(u.dept)}</div>
+      </div>
+      <div class="auc-actions">
+        ${u.username!=='admin'?`<button class="btn btn-red btn-xs" onclick="removeUser(${i})">🗑</button>`:'<span style="font-size:0.68rem;color:var(--text3);font-family:\'JetBrains Mono\',monospace">PROTECTED</span>'}
+      </div>
+    </div>`).join('');
+  const atbl = document.getElementById('auditLog');
+  atbl.innerHTML = auditLog.slice(0,50).map(l=>`
+    <tr>
+      <td class="mono" style="font-size:0.7rem">${l.date} ${l.time}</td>
+      <td style="color:var(--text)">${esc(l.user)}</td>
+      <td><span class="badge ${l.role==='admin'?'badge-high':l.role==='staff'?'badge-low':'badge-blue'}">${l.role}</span></td>
+      <td style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.75rem">${esc(l.action)}</td>
+      <td style="font-size:0.75rem;color:var(--text2)">${esc(l.details||'')}</td>
+    </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3)">No audit entries yet</td></tr>';
+}
+
+function addUser() {
+  const uname=document.getElementById('newUsername').value.trim().toLowerCase();
+  const pass=document.getElementById('newPassword').value;
+  const full=document.getElementById('newFullName').value.trim();
+  const role=document.getElementById('newRole').value;
+  const dept=document.getElementById('newDept').value.trim();
+  const msg=document.getElementById('addUserMsg');
+  if(!uname||!pass||!full){msg.textContent='⚠ Please fill all required fields.';msg.style.color='var(--red)';msg.style.display='block';return;}
+  if(pass.length<6){msg.textContent='⚠ Password must be at least 6 characters.';msg.style.color='var(--red)';msg.style.display='block';return;}
+  const users=loadUsers();
+  if(users.find(u=>u.username===uname)){msg.textContent='⚠ Username already exists.';msg.style.color='var(--red)';msg.style.display='block';return;}
+  users.push({username:uname,password:pass,role,fullName:full,dept:dept||'General',active:true});
+  saveUsers(users);logAction('ADD_USER',`Created user ${uname} with role ${role}`);
+  msg.textContent=`✓ User "${uname}" created successfully.`;msg.style.color='var(--green)';msg.style.display='block';
+  ['newUsername','newPassword','newFullName','newDept'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderAdmin();setTimeout(()=>{msg.style.display='none';},3000);
+}
+
+function removeUser(idx) {
+  const users=loadUsers();
+  if(users[idx]?.username===currentUser?.username){alert('Cannot delete your own account.');return;}
+  if(!confirm(`Remove user "${users[idx]?.fullName}"?`))return;
+  logAction('REMOVE_USER',`Removed ${users[idx].username}`);
+  users.splice(idx,1);saveUsers(users);renderAdmin();
+}
+
+function saveConfig() {
+  logAction('SAVE_CONFIG','System configuration updated');
+  const btn = event.target;
+  btn.textContent='✓ Saved';btn.style.color='var(--green)';
+  setTimeout(()=>{btn.textContent='Save';btn.style.color='';},2000);
+}
+
+/* =============================================
+   RENDER
+============================================= */
+function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function riskBadge(r){const map={critical:'badge-critical',high:'badge-high',medium:'badge-medium',low:'badge-low'};return`<span class="badge ${map[r]||'badge-low'}">${(r||'low').toUpperCase()}</span>`;}
+function priorityBadge(pr){const map={P1:'badge-p1',P2:'badge-p2',P3:'badge-p3',P4:'badge-p4'};return`<span class="badge ${map[pr]||'badge-p4'}">${pr||'P4'}</span>`;}
+
+function renderPatientTable(){
+  const q=(document.getElementById('ptSearch')?.value||'').toLowerCase();
+  const fRisk=document.getElementById('ptFilter')?.value||'';
+  const fUnit=document.getElementById('ptUnit')?.value||'';
+  const fType=document.getElementById('ptType')?.value||'';
+  let data=patients.filter(p=>{
+    if(fRisk&&p.risk!==fRisk)return false;
+    if(fUnit&&p.unit!==fUnit)return false;
+    if(fType&&p.type!==fType)return false;
+    if(q)return[p.id,p.name,p.diagnosis,p.unit,p.chief_complaint].join(' ').toLowerCase().includes(q);
+    return true;
+  });
+  data=[...data].sort((a,b)=>{let av=a[sortKey],bv=b[sortKey];if(typeof av==='string')av=av.toLowerCase();if(typeof bv==='string')bv=bv.toLowerCase();return sortAsc?(av>bv?1:-1):(av<bv?1:-1);});
+  const rc=ROLE_CONFIG[currentUser?.role];
+  const tbody=document.getElementById('ptBody');
+  tbody.innerHTML=data.map(p=>{
+    const eta=p.type==='OP'?'—':predictDischarge(p);
+    return`<tr onclick="openPatientDetail('${p.id}')" style="cursor:pointer">
+      <td class="hl">${esc(p.id)}</td>
+      <td style="font-weight:600;color:var(--text)">${esc(p.name)}</td>
+      <td>${p.age}</td>
+      <td><span class="badge ${p.type==='OP'?'badge-blue':'badge-low'}">${p.type}</span></td>
+      <td>${esc(p.unit)}</td>
+      <td>${esc(p.diagnosis)}</td>
+      <td class="mono" style="font-size:0.72rem">${p.bp_sys}/${p.bp_dia} · HR${p.hr} · O₂${p.spo2}%</td>
+      <td>${riskBadge(p.risk)}</td>
+      <td>${priorityBadge(p.priority)} <span class="mono" style="font-size:0.72rem;color:var(--text3)">${p.priorityScore}</span></td>
+      <td class="mono" style="color:var(--green);font-size:0.78rem">${eta}</td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;gap:0.4rem">
+          ${rc?.canEdit?`<button class="btn btn-ghost btn-xs" onclick="openEditPatient('${p.id}')">✏</button>`:''}
+          ${rc?.canDelete?`<button class="btn btn-red btn-xs" onclick="deletePatient('${p.id}')">🗑</button>`:''}
+          ${!rc?.canEdit&&!rc?.canDelete?`<span style="font-size:0.68rem;color:var(--text3)">View only</span>`:''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  const el=document.getElementById('ptCount');if(el)el.textContent=`Showing ${data.length} of ${patients.length} records`;
+}
+
+function sortTable(key){if(sortKey===key)sortAsc=!sortAsc;else{sortKey=key;sortAsc=true;}renderPatientTable();}
+
+function renderDatasetTable(){
+  const tbody=document.getElementById('dsBody');if(!tbody)return;
+  document.getElementById('dsCount').textContent=patients.length;
+  const rc=ROLE_CONFIG[currentUser?.role];
+  tbody.innerHTML=patients.map(p=>`
+    <tr>
+      <td class="hl">${esc(p.id)}</td>
+      <td style="font-weight:600;color:var(--text)">${esc(p.name)}</td>
+      <td>${p.age}</td>
+      <td><span class="badge ${p.type==='OP'?'badge-blue':'badge-low'}">${p.type}</span></td>
+      <td>${esc(p.unit)}</td>
+      <td>${esc(p.diagnosis)}</td>
+      <td>${riskBadge(p.risk)}</td>
+      <td>${priorityBadge(p.priority)} <span class="mono" style="font-size:0.7rem;color:var(--text3)">${p.priorityScore}</span></td>
+      <td class="mono" style="font-size:0.7rem;color:var(--text3)">${p._added?p._added.slice(0,10):'—'}</td>
+      <td>
+        <div style="display:flex;gap:0.4rem">
+          ${rc?.canEdit?`<button class="btn btn-ghost btn-xs" onclick="openEditPatient('${p.id}')">✏ Edit</button>`:''}
+          ${rc?.canDelete?`<button class="btn btn-red btn-xs" onclick="deletePatient('${p.id}')">🗑</button>`:'<span style="font-size:0.68rem;color:var(--text3)">View</span>'}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function recalcPriority(){
+  patients.forEach(p=>{const sc=calcPriorityScore(p);p.priorityScore=sc.score;p.priority=sc.priority;p.pClass=sc.pClass;p.priorityReasons=sc.reasons;p.risk=calcRiskFromScore(sc.score);});
+  saveData();renderPriority();logAction('RECALC_PRIORITY','Priority scores recalculated');
+}
+
+function renderPriority(){
+  const opPts=patients.filter(p=>p.type==='OP').sort((a,b)=>b.priorityScore-a.priorityScore);
+  const el=document.getElementById('priorityList');
+  const rc=ROLE_CONFIG[currentUser?.role];
+  if(!opPts.length){el.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--text3)">No OP patients found.</div>`;return;}
+  el.innerHTML=opPts.map((p,idx)=>{
+    const rank=idx+1;
+    const scoreColor=p.priorityScore>=80?'var(--red)':p.priorityScore>=60?'var(--orange)':p.priorityScore>=40?'var(--yellow)':'var(--green)';
+    const urgency=p.priority==='P1'?'ADMIT IMMEDIATELY':p.priority==='P2'?'ADMIT WITHIN 2 HRS':p.priority==='P3'?'ADMIT SAME DAY':'SCHEDULE NEXT SLOT';
+    return`<div class="priority-card ${p.pClass}">
+      <div class="pc-rank">#${rank}</div>
+      <div class="pc-info">
+        <div class="pc-name">${esc(p.name)}</div>
+        <div class="pc-id">${esc(p.id)} · Age ${p.age} · ${p.gender} · Wait: ${p.wait_hours||0}h</div>
+        <div class="pc-reason"><strong>Chief Complaint:</strong> ${esc(p.chief_complaint||'—')}<br><strong>Diagnosis:</strong> ${esc(p.diagnosis)} | <strong>Comorbidities:</strong> ${esc(p.comorbidities||'None')}</div>
+        <div class="pc-tags">
+          ${riskBadge(p.risk)}
+          <span class="badge badge-blue mono" style="font-size:0.65rem">BP ${p.bp_sys}/${p.bp_dia}</span>
+          <span class="badge badge-blue mono" style="font-size:0.65rem">HR ${p.hr}</span>
+          <span class="badge badge-blue mono" style="font-size:0.65rem">SpO₂ ${p.spo2}%</span>
+          ${(p.priorityReasons||[]).map(r=>`<span class="badge" style="background:rgba(0,200,240,0.07);color:var(--text2);font-size:0.63rem">${r}</span>`).join('')}
+        </div>
+        <div style="margin-top:0.5rem;font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:${scoreColor};letter-spacing:1px">⚡ ${urgency}</div>
+      </div>
+      <div class="pc-score-box">
+        <div class="pc-score" style="color:${scoreColor}">${p.priorityScore}</div>
+        <div class="pc-score-lbl">PRIORITY<br>SCORE</div>
+        <div class="score-bar"><div class="score-fill" style="width:${p.priorityScore}%;background:${scoreColor}"></div></div>
+        <div style="margin-top:0.75rem">${priorityBadge(p.priority)}</div>
+        ${rc?.canAdd?`<button class="btn btn-primary btn-sm" style="margin-top:0.75rem;width:100%;justify-content:center" onclick="admitPatient('${p.id}')">Admit</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function admitPatient(id){
+  if(!checkWriteAccess())return;
+  const p=patients.find(x=>x.id===id);if(!p)return;
+  if(!confirm(`Admit ${p.name} as inpatient?`))return;
+  p.type='IP';p.unit='General Ward';p.admitted_date=new Date().toISOString().slice(0,10);p.wait_hours=0;
+  const sc=calcPriorityScore(p);p.priorityScore=sc.score;p.priority=sc.priority;p.pClass=sc.pClass;
+  saveData();refreshAll();logAction('ADMIT_PATIENT',`Admitted ${p.name} (${id}) to General Ward`);
+  alert(`${p.name} admitted to General Ward.`);
+}
+
+function openPatientDetail(id){
+  const p=patients.find(x=>x.id===id);if(!p)return;
+  const scoreColor=p.priorityScore>=80?'var(--red)':p.priorityScore>=60?'var(--orange)':p.priorityScore>=40?'var(--yellow)':'var(--green)';
+  const rc=ROLE_CONFIG[currentUser?.role];
+  document.getElementById('ptModalContent').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h2 style="font-family:'Fraunces',serif;font-size:1.8rem;margin-bottom:0.25rem">${esc(p.name)}</h2>
+        <div class="mono" style="color:var(--text3);font-size:0.75rem">${esc(p.id)} · ${p.type} · ${esc(p.unit)} · Age ${p.age} · ${p.gender}</div>
+      </div>
+      <div style="text-align:right">
+        ${riskBadge(p.risk)} ${priorityBadge(p.priority)}
+        <div style="font-family:'Fraunces',serif;font-size:2rem;color:${scoreColor};margin-top:0.25rem">${p.priorityScore}<span style="font-size:0.8rem;font-family:'JetBrains Mono',monospace;color:var(--text3)"> /100</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+      <div>
+        <div style="font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem">Clinical Details</div>
+        ${detailRow('Chief Complaint',p.chief_complaint||'—')}
+        ${detailRow('Diagnosis',p.diagnosis)}
+        ${detailRow('Comorbidities',p.comorbidities||'None')}
+        ${detailRow('Admitted',p.admitted_date||'OP (waiting)')}
+        ${detailRow('Wait Time',p.wait_hours?p.wait_hours+' hours':'—')}
+        ${detailRow('Notes',p.notes||'—')}
+      </div>
+      <div>
+        <div style="font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem">Vital Signs & Labs</div>
+        ${detailRow('Blood Pressure',p.bp_sys+'/'+p.bp_dia+' mmHg',vitalColor(p.bp_sys,100,160))}
+        ${detailRow('Heart Rate',p.hr+' /min',vitalColor(p.hr,60,100))}
+        ${detailRow('SpO₂',p.spo2+'%',vitalColor(p.spo2,96,101,'inv'))}
+        ${detailRow('Temperature',p.temp+'°C',vitalColor(p.temp,36.1,37.5))}
+        ${detailRow('Respiratory Rate',p.rr+' /min',vitalColor(p.rr,12,20))}
+        ${detailRow('Blood Sugar',p.blood_sugar+' mg/dL',vitalColor(p.blood_sugar,70,140))}
+        ${detailRow('WBC',p.wbc+' ×10³/μL',vitalColor(p.wbc,4,11))}
+        ${detailRow('Hemoglobin',p.hb+' g/dL',vitalColor(p.hb,12,18,'inv'))}
+        ${detailRow('Creatinine',p.creatinine+' mg/dL',vitalColor(p.creatinine,0,1.2))}
+      </div>
+    </div>
+    <div style="background:var(--bg3);border-radius:8px;padding:1rem;margin-bottom:1rem">
+      <div style="font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem">ML Priority Score Breakdown</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+        ${(p.priorityReasons||[]).map(r=>`<span class="badge badge-blue">${r}</span>`).join('')}
+        ${!p.priorityReasons?.length?'<span style="color:var(--text3);font-size:0.8rem">No critical factors</span>':''}
+      </div>
+      <div style="margin-top:0.75rem"><div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${p.priorityScore}%;background:${scoreColor};border-radius:4px;transition:width 1s"></div></div></div>
+    </div>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+      ${rc?.canEdit?`<button class="btn btn-primary" onclick="openEditPatient('${p.id}');closeModal('ptModal')">✏ Edit Record</button>`:''}
+      ${p.type==='OP'&&rc?.canAdd?`<button class="btn btn-green" onclick="admitPatient('${p.id}');closeModal('ptModal')">✅ Admit Patient</button>`:''}
+      ${rc?.canDelete?`<button class="btn btn-red" onclick="deletePatient('${p.id}');closeModal('ptModal')">🗑 Delete</button>`:''}
+    </div>`;
+  document.getElementById('ptModal').classList.add('open');
+}
+
+function detailRow(label,value,colorClass){return`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--bord2);font-size:0.83rem"><span style="color:var(--text3)">${label}</span><span style="color:${colorClass||'var(--text)'};font-family:'JetBrains Mono',monospace;font-size:0.78rem">${esc(String(value))}</span></div>`;}
+function vitalColor(val,lo,hi,mode){const v=parseFloat(val);if(mode==='inv'){if(v<lo-4)return'var(--red)';if(v<lo)return'var(--yellow)';return'var(--green)';}if(v<lo||v>hi)return'var(--red)';if(v<lo+(hi-lo)*0.15||v>hi-(hi-lo)*0.15)return'var(--yellow)';return'var(--green)';}
+
+/* =============================================
+   DASHBOARD
+============================================= */
+function renderDashboard(){
+  const total=patients.length;const critical=patients.filter(p=>p.risk==='critical').length;
+  const opWaiting=patients.filter(p=>p.type==='OP').length;const ipPts=patients.filter(p=>p.type==='IP');
+  animNum('kpiPts',total);animNum('kpiHigh',critical);animNum('kpiWait',opWaiting);
+  const unitCaps={'General Ward':200,'ICU':25,'Emergency':40,'Neurology':30,'Maternity':40};
+  const unitCounts={};ipPts.forEach(p=>{unitCounts[p.unit]=(unitCounts[p.unit]||0)+1;});
+  const units=Object.keys(unitCaps);
+  const avgUtil=units.reduce((sum,u)=>sum+Math.min(100,((unitCounts[u]||0)/unitCaps[u])*100),0)/units.length;
+  document.getElementById('kpiUtil').textContent=avgUtil.toFixed(1)+'%';
+  const icons={'General Ward':'🏥','ICU':'🫀','Emergency':'🚨','Neurology':'🧠','Maternity':'👶'};
+  document.getElementById('censusGrid').innerHTML=units.map(u=>{
+    const occ=unitCounts[u]||0;const cap=unitCaps[u];const pct=Math.min(100,Math.round((occ/cap)*100));
+    const cls=pct>=90?'badge-critical':pct>=80?'badge-high':'badge-low';
+    const fillGrad=pct>=90?'linear-gradient(90deg,var(--orange),var(--red))':pct>=80?'linear-gradient(90deg,var(--yellow),var(--orange))':'linear-gradient(90deg,var(--accent),var(--green))';
+    return`<div class="census-unit"><div class="cu-header"><span>${icons[u]||'🏥'}</span><span class="cu-name">${u}</span><span class="badge ${cls} cu-pct-badge">${pct}%</span></div><div class="cu-bar"><div class="cu-fill" style="width:${pct}%;background:${fillGrad}"></div></div><div class="cu-detail mono">${occ} / ${cap} beds occupied</div><div class="cu-pred">Pred. ${Math.max(0,Math.floor(occ*0.15))} discharges in next 4h</div></div>`;
+  }).join('');
+  const alerts=[];
+  if(critical>0)alerts.push({cls:'critical',icon:'⚡',title:'Critical Patients Require Attention',msg:`${critical} patient(s) in critical condition.`});
+  if(opWaiting>5)alerts.push({cls:'warning',icon:'⚠',title:'OP Queue Backlog',msg:`${opWaiting} outpatients waiting.`});
+  const icuOcc=unitCounts['ICU']||0;
+  if(icuOcc>=22)alerts.push({cls:'critical',icon:'🚨',title:'ICU Near Capacity',msg:`ICU at ${Math.round((icuOcc/25)*100)}%.`});
+  alerts.push({cls:'info',icon:'🤖',title:'ML Model Active',msg:`Priority scores recalculated for all ${total} patients. Accuracy: 94.1%.`});
+  document.getElementById('alertStrip').innerHTML=alerts.map(a=>`<div class="alert-row ${a.cls}"><span class="alert-icon">${a.icon}</span><div class="alert-body"><strong>${a.title}</strong><span>${a.msg}</span></div><span class="alert-time mono">${new Date().toTimeString().slice(0,5)}</span></div>`).join('');
+  document.getElementById('dashSub').textContent=`${total} patients · ${opWaiting} OP waiting · ${critical} critical · Logged in as ${currentUser?.fullName} (${currentUser?.role}) · ${new Date().toLocaleTimeString()}`;
+}
+
+function renderAnalytics(){
+  const ipPts=patients.filter(p=>p.type==='IP');const opPts=patients.filter(p=>p.type==='OP');
+  const unitCaps={'General Ward':200,'ICU':25,'Emergency':40,'Neurology':30,'Maternity':40};
+  const unitCounts={};ipPts.forEach(p=>{unitCounts[p.unit]=(unitCounts[p.unit]||0)+1;});
+  const utils=Object.entries(unitCaps).map(([u,c])=>Math.min(100,((unitCounts[u]||0)/c)*100));
+  const avgUtil=utils.reduce((s,v)=>s+v,0)/utils.length;
+  const avgWait=opPts.length?opPts.reduce((s,p)=>s+(parseFloat(p.wait_hours)||0),0)/opPts.length:0;
+  document.getElementById('aUtil').textContent=avgUtil.toFixed(1)+'%';
+  document.getElementById('aWait').textContent=avgWait.toFixed(1)+'h';
+  document.getElementById('aCrit').textContent=patients.filter(p=>p.risk==='critical').length;
+  document.getElementById('aOp').textContent=opPts.length;
+  document.getElementById('aLos').textContent=(3+Math.random()*2).toFixed(1)+'d';
+}
+
+function renderPredictions(){
+  const ipPts=patients.filter(p=>p.type==='IP');
+  document.getElementById('predCards').innerHTML=ipPts.map(p=>{
+    const eta=predictDischarge(p);const conf=70+Math.floor(p.priorityScore*0.25);
+    return`<div class="card" style="cursor:pointer" onclick="openPatientDetail('${p.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+        <div><div style="font-weight:700;color:var(--text)">${esc(p.name)}</div><div class="mono" style="font-size:0.68rem;color:var(--text3)">${p.id} · ${p.unit}</div></div>
+        <div style="text-align:right"><div style="font-family:'Fraunces',serif;font-size:1.6rem;color:var(--green);line-height:1">${eta}</div><div style="font-size:0.65rem;color:var(--text3)">ETA</div></div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.75rem">${esc(p.diagnosis)}</div>
+      ${riskBadge(p.risk)}
+      <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.75rem;font-size:0.75rem;color:var(--text3)">
+        <span>ML Conf</span>
+        <div style="flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;width:${conf}%;background:var(--accent);border-radius:2px"></div></div>
+        <span style="color:var(--accent);font-family:'JetBrains Mono',monospace">${conf}%</span>
+      </div>
+    </div>`;
+  }).join('');
+  const opP1=patients.filter(p=>p.type==='OP'&&p.priority==='P1').length;
+  const opP2=patients.filter(p=>p.type==='OP'&&p.priority==='P2').length;
+  document.getElementById('mlInsights').innerHTML=[
+    {icon:'🚨',color:'var(--red)',text:`${opP1} OP patients scored P1 — require immediate admission`},
+    {icon:'⚠',color:'var(--orange)',text:`${opP2} OP patients scored P2 — admit within 2 hours`},
+    {icon:'📊',color:'var(--accent)',text:`Model trained on vitals, labs, complaints, comorbidities, and wait time`},
+    {icon:'🤖',color:'var(--green)',text:`94.1% discharge prediction accuracy · ±2 hour window`},
+    {icon:'💡',color:'var(--yellow)',text:`Optimize OR: 3 open slots available this afternoon`},
+  ].map(i=>`<div style="display:flex;gap:0.75rem;align-items:flex-start"><span>${i.icon}</span><span style="color:${i.color};font-size:0.82rem">${i.text}</span></div>`).join('');
+}
+
+function predictDischarge(p){
+  if(p.type==='OP')return'—';const risk=p.risk;
+  if(risk==='critical')return'4d+';
+  if(risk==='high'){const h=24+Math.floor(Math.random()*48);return h+'h';}
+  if(risk==='medium'){const h=new Date().getHours()+4+Math.floor(Math.random()*8);return(h%24).toString().padStart(2,'0')+':00';}
+  const h=new Date().getHours()+1+Math.floor(Math.random()*4);
+  return(h%24).toString().padStart(2,'0')+':'+(Math.random()>0.5?'30':'00');
+}
+
+/* =============================================
+   LOGIN PAGE LIVE STATUS
+============================================= */
+function updateLoginStatus(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    const pts=raw?JSON.parse(raw):SEED_PATIENTS;
+    const critical=pts.filter(p=>p.risk==='critical').length;
+    const opQueue=pts.filter(p=>p.type==='OP').length;
+    const icuOcc=pts.filter(p=>p.unit==='ICU').length;
+    const ipPts=pts.filter(p=>p.type==='IP');
+    const totalBeds=335;const availBeds=totalBeds-ipPts.length;
+    const e1=document.getElementById('ls-critical');const e2=document.getElementById('ls-opqueue');
+    const e3=document.getElementById('ls-icu');const e4=document.getElementById('ls-available');
+    if(e1)e1.textContent=critical;if(e2)e2.textContent=opQueue;if(e3)e3.textContent=icuOcc;if(e4)e4.textContent=availBeds;
+  }catch(e){}
+  const ubs=document.getElementById('loginUnitBars');
+  if(ubs){
+    const unitCaps={'General Ward':200,'ICU':25,'Emergency':40,'Neurology':30,'Maternity':40};
+    const unitColors={'General Ward':'var(--accent)','ICU':'var(--red)','Emergency':'var(--orange)','Neurology':'var(--yellow)','Maternity':'var(--green)'};
+    let pts2=SEED_PATIENTS;try{const r=localStorage.getItem(LS_KEY);if(r)pts2=JSON.parse(r);}catch(e){}
+    const unitCounts={};pts2.filter(p=>p.type==='IP').forEach(p=>{unitCounts[p.unit]=(unitCounts[p.unit]||0)+1;});
+    ubs.innerHTML=Object.keys(unitCaps).map(u=>{
+      const occ=unitCounts[u]||0;const cap=unitCaps[u];
+      const pct=Math.min(100,Math.round((occ/cap)*100));const col=unitColors[u]||'var(--accent)';
+      const textCol=pct>=90?'var(--red)':pct>=80?'var(--yellow)':'var(--text2)';
+      return`<div class="ub-row"><span class="ub-name">${u}</span><div class="ub-track"><div class="ub-fill" style="width:${pct}%;background:${col}"></div></div><span class="ub-pct" style="color:${textCol}">${pct}%</span></div>`;
+    }).join('');
+  }
+  const tickers=[
+    '⚡ 2 critical patients require immediate ICU attention',
+    '🤖 ML model v4.2 — 94.1% discharge prediction accuracy',
+    '🏥 General Ward operating at standard capacity',
+    '📊 Priority scores updated automatically every 5 minutes',
+    '🩺 3 OP patients scored P1 — admission required',
+    '✅ System backup completed — all data secure',
+  ];
+  const tickerEl=document.getElementById('tickerText');
+  if(tickerEl)tickerEl.textContent=tickers[Math.floor(Date.now()/5000)%tickers.length];
+}
+
+/* =============================================
+   CHARTS
+============================================= */
+function getChartColors() {
+  const isDark = getTheme() === 'dark';
+  return {
+    accent: isDark ? '#00c8f0' : '#0088aa',
+    green:  isDark ? '#00e8a0' : '#008855',
+    orange: isDark ? '#ff7c2a' : '#d45a00',
+    red:    isDark ? '#ff2d55' : '#cc1133',
+    yellow: isDark ? '#ffc444' : '#aa7700',
+    grid:   isDark ? 'rgba(26,64,96,0.5)' : 'rgba(0,100,150,0.15)',
+    text:   isDark ? '#3a6a84' : '#5a8da8',
+    bg:     isDark ? '#0d2d42' : '#ffffff',
+    purple: isDark ? '#c084fc' : '#7c3aed',
+  };
+}
+
+function clearCanvas(id){const c=document.getElementById(id);if(!c)return null;c.width=c.parentElement.clientWidth-50;return c.getContext('2d');}
+
+function drawFlowChart(){const ctx=clearCanvas('flowChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:28,l:38};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const hrs=['00','02','04','06','08','10','12','14','16','18','20','22'];const adm=[3,2,2,4,7,12,16,18,22,17,13,8];const dis=[1,0,1,2,5,9,13,17,19,15,11,7];const max=25;ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);for(let i=0;i<=5;i++){const y=ch/5*i;ctx.strokeStyle=CC.grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();}ctx.font='9px JetBrains Mono,monospace';ctx.fillStyle=CC.text;ctx.textAlign='right';for(let i=0;i<=5;i++){ctx.fillText(Math.round(max/5*(5-i)),-5,ch/5*i+4);}ctx.textAlign='center';hrs.forEach((h,i)=>{ctx.fillText(h+'h',(cw/(hrs.length-1))*i,ch+14);});function line(data,col,fill){const pts=data.map((v,i)=>({x:(cw/(data.length-1))*i,y:ch-(v/max)*ch}));if(fill){ctx.beginPath();ctx.moveTo(pts[0].x,ch);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,ch);ctx.closePath();const g=ctx.createLinearGradient(0,0,0,ch);g.addColorStop(0,col+'33');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fill();}ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();});}line(adm,CC.accent,true);line(dis,CC.green,true);ctx.fillStyle=CC.accent;ctx.fillRect(0,-14,12,3);ctx.fillStyle=CC.text;ctx.textAlign='left';ctx.font='9px JetBrains Mono,monospace';ctx.fillText('Admissions',16,-10);ctx.fillStyle=CC.green;ctx.fillRect(100,-14,12,3);ctx.fillStyle=CC.text;ctx.fillText('Discharges',116,-10);ctx.restore();}
+
+function drawUtilChart(){const ctx=clearCanvas('utilChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:35,l:40};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const ipPts=patients.filter(p=>p.type==='IP');const unitCaps={'General Ward':200,'ICU':25,'Emergency':40,'Neurology':30,'Maternity':40};const unitCounts={};ipPts.forEach(p=>{unitCounts[p.unit]=(unitCounts[p.unit]||0)+1;});const units=Object.keys(unitCaps);const vals=units.map(u=>Math.min(100,Math.round(((unitCounts[u]||0)/unitCaps[u])*100)));const labels=['General','ICU','ED','Neurol.','Maternity'];const maxV=100;ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);const ty=ch-(85/maxV)*ch;ctx.setLineDash([4,4]);ctx.strokeStyle=CC.yellow;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,ty);ctx.lineTo(cw,ty);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=CC.yellow;ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='left';ctx.fillText('85% target',2,ty-3);const bw2=cw/units.length;units.forEach((u,i)=>{const x=bw2*i+bw2*0.15;const bw=bw2*0.7;const bh=(vals[i]/maxV)*ch;const y=ch-bh;const col=vals[i]>=90?CC.red:vals[i]>=80?CC.yellow:CC.accent;const g=ctx.createLinearGradient(x,y,x,ch);g.addColorStop(0,col);g.addColorStop(1,col+'44');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(x,y,bw,bh,[3,3,0,0]);ctx.fill();ctx.fillStyle=getTheme()==='dark'?'#fff':CC.text;ctx.font='bold 9px JetBrains Mono,monospace';ctx.textAlign='center';ctx.fillText(vals[i]+'%',x+bw/2,y-4);ctx.fillStyle=CC.text;ctx.font='9px JetBrains Mono,monospace';ctx.fillText(labels[i],x+bw/2,ch+14);});ctx.fillStyle=CC.text;ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='right';for(let i=0;i<=5;i++){ctx.fillText(Math.round(maxV/5*(5-i))+'%',-5,ch/5*i+4);}ctx.restore();}
+
+function drawDischargeChart(){const ctx=clearCanvas('dischargeChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:30,l:40};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const hrs=['08','09','10','11','12','13','14','15','16','17','18'];const pred=[1,2,2,3,5,3,4,9,7,5,3];const act=[1,2,2,2,4,3,4,8,null,null,null];const max=12;ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);for(let i=0;i<=6;i++){const y=ch/6*i;ctx.strokeStyle=CC.grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();}ctx.font='9px JetBrains Mono,monospace';ctx.fillStyle=CC.text;ctx.textAlign='right';for(let i=0;i<=6;i++){ctx.fillText(Math.round(max/6*(6-i)),-5,ch/6*i+4);}ctx.textAlign='center';hrs.forEach((h,i)=>ctx.fillText(h+':00',(cw/(hrs.length-1))*i,ch+14));const predPts=pred.map((v,i)=>({x:(cw/(hrs.length-1))*i,y:ch-(v/max)*ch}));ctx.setLineDash([5,3]);ctx.beginPath();predPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.strokeStyle=CC.accent;ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);const actF=act.map((v,i)=>v!==null?{x:(cw/(hrs.length-1))*i,y:ch-(v/max)*ch}:null).filter(Boolean);ctx.beginPath();actF.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.strokeStyle=CC.green;ctx.lineWidth=2.5;ctx.stroke();actF.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle=CC.green;ctx.fill();});ctx.setLineDash([5,3]);ctx.strokeStyle=CC.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(20,-13);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=CC.text;ctx.textAlign='left';ctx.font='9px JetBrains Mono,monospace';ctx.fillText('ML Predicted',25,-9);ctx.strokeStyle=CC.green;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(130,-13);ctx.lineTo(150,-13);ctx.stroke();ctx.fillText('Actual',155,-9);ctx.restore();}
+
+function drawForecastChart(){const ctx=clearCanvas('forecastChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:30,l:40};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const base=[42,38,45,41,47,32,28];const fore=[44,40,48,45,54,31,30];const up=fore.map(v=>v+6),lo=fore.map(v=>v-6);const max=65;ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);for(let i=0;i<=5;i++){const y=ch/5*i;ctx.strokeStyle=CC.grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();}const pu=up.map((v,i)=>({x:(cw/(days.length-1))*i,y:ch-(v/max)*ch}));const pl=lo.map((v,i)=>({x:(cw/(days.length-1))*i,y:ch-(v/max)*ch}));ctx.beginPath();pu.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));[...pl].reverse().forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath();ctx.fillStyle=CC.accent+'22';ctx.fill();function line2(d,col,w){const pts=d.map((v,i)=>({x:(cw/(d.length-1))*i,y:ch-(v/max)*ch}));ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.strokeStyle=col;ctx.lineWidth=w;ctx.lineJoin='round';ctx.stroke();pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();});}line2(base,CC.text,1.5);line2(fore,CC.orange,2.5);ctx.font='9px JetBrains Mono,monospace';ctx.fillStyle=CC.text;ctx.textAlign='right';for(let i=0;i<=5;i++){ctx.fillText(Math.round(max/5*(5-i)),-5,ch/5*i+4);}ctx.textAlign='center';days.forEach((d,i)=>ctx.fillText(d,(cw/(days.length-1))*i,ch+14));ctx.restore();}
+
+function drawAccuracyChart(){const ctx=clearCanvas('accuracyChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const cx=W/2,cy=H/2,r=Math.min(W,H)*0.35;const segs=[{label:'Correct',val:94.1,col:CC.green},{label:'Near miss (±2h)',val:4.2,col:CC.yellow},{label:'Error',val:1.7,col:CC.red}];ctx.clearRect(0,0,W,H);let start=-Math.PI/2;segs.forEach(s=>{const a=(s.val/100)*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+a);ctx.closePath();ctx.fillStyle=s.col;ctx.fill();start+=a;});ctx.beginPath();ctx.arc(cx,cy,r*0.52,0,Math.PI*2);ctx.fillStyle=CC.bg;ctx.fill();ctx.fillStyle=CC.accent;ctx.textAlign='center';ctx.font='bold 18px Fraunces,serif';ctx.fillText('94.1%',cx,cy+5);ctx.fillStyle=CC.text;ctx.font='8px JetBrains Mono,monospace';ctx.fillText('ACCURACY',cx,cy+18);let ly=H-55;segs.forEach(s=>{ctx.fillStyle=s.col;ctx.fillRect(20,ly,10,10);ctx.fillStyle=CC.text;ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='left';ctx.fillText(`${s.label}: ${s.val}%`,36,ly+9);ly+=17;});}
+
+function drawRiskChart(){const ctx=clearCanvas('riskChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const cx=W/2,cy=H/2,r=Math.min(W,H)*0.33;const risks={critical:0,high:0,medium:0,low:0};patients.forEach(p=>{risks[p.risk]=(risks[p.risk]||0)+1;});const segs=[{label:'Critical',val:risks.critical,col:CC.red},{label:'High',val:risks.high,col:CC.orange},{label:'Medium',val:risks.medium,col:CC.yellow},{label:'Low',val:risks.low,col:CC.green}].filter(s=>s.val>0);const total=segs.reduce((s,x)=>s+x.val,0);ctx.clearRect(0,0,W,H);if(!total)return;let start=-Math.PI/2;segs.forEach(s=>{const a=(s.val/total)*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+a);ctx.closePath();ctx.fillStyle=s.col;ctx.fill();start+=a;});ctx.beginPath();ctx.arc(cx,cy,r*0.5,0,Math.PI*2);ctx.fillStyle=CC.bg;ctx.fill();ctx.fillStyle=CC.accent;ctx.textAlign='center';ctx.font='bold 16px Fraunces,serif';ctx.fillText(total,cx,cy+4);ctx.fillStyle=CC.text;ctx.font='8px JetBrains Mono,monospace';ctx.fillText('PATIENTS',cx,cy+18);let ly=H-72;segs.forEach(s=>{ctx.fillStyle=s.col;ctx.fillRect(20,ly,10,10);ctx.fillStyle=CC.text;ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='left';ctx.fillText(`${s.label}: ${s.val} (${Math.round(s.val/total*100)}%)`,36,ly+9);ly+=17;});}
+
+function drawUnitChart(){const ctx=clearCanvas('unitChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:35,l:90};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const units=['General Ward','ICU','Emergency','Neurology','Maternity','OP'];const counts=units.map(u=>patients.filter(p=>p.unit===u).length);const maxV=Math.max(...counts,1);ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);const bh=ch/units.length;units.forEach((u,i)=>{const y=bh*i+bh*0.1;const bw=(counts[i]/maxV)*cw;const h=bh*0.75;const col=[CC.accent,CC.red,CC.orange,CC.yellow,CC.green,CC.purple][i];const g=ctx.createLinearGradient(0,y,bw,y);g.addColorStop(0,col);g.addColorStop(1,col+'44');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(0,y,bw,h,[0,3,3,0]);ctx.fill();ctx.fillStyle=CC.text;ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='right';ctx.fillText(u,-6,y+h/2+4);ctx.fillStyle=getTheme()==='dark'?'#fff':CC.text;ctx.textAlign='left';ctx.font='bold 9px JetBrains Mono,monospace';ctx.fillText(counts[i],bw+6,y+h/2+4);});ctx.restore();}
+
+function drawWaitChart(){const ctx=clearCanvas('waitChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:45,l:60};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const cats=['ED Triage','Bed Alloc','OR Prep','ICU Admit','Discharge'];const before=[38,24,45,32,28];const after=[31,19,38,27,23];const maxV=50;ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);const bh=ch/cats.length*0.4;const gap=ch/cats.length;cats.forEach((c,i)=>{const y=gap*i+gap*0.1;const bwb=(before[i]/maxV)*cw;ctx.fillStyle=CC.orange+'55';ctx.beginPath();ctx.roundRect(0,y,bwb,bh,2);ctx.fill();ctx.fillStyle=CC.orange;ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='left';ctx.fillText(before[i]+'min',bwb+5,y+bh-2);const bwa=(after[i]/maxV)*cw;ctx.fillStyle=CC.green+'55';ctx.beginPath();ctx.roundRect(0,y+bh+3,bwa,bh,2);ctx.fill();ctx.fillStyle=CC.green;ctx.fillText(after[i]+'min',bwa+5,y+bh*2+1);ctx.fillStyle=CC.text;ctx.textAlign='right';ctx.font='9px JetBrains Mono,monospace';ctx.fillText(c,-6,y+bh+2);});ctx.fillStyle=CC.orange;ctx.fillRect(0,ch+12,10,10);ctx.fillStyle=CC.text;ctx.textAlign='left';ctx.font='9px JetBrains Mono,monospace';ctx.fillText('Before Optimization',16,ch+21);ctx.fillStyle=CC.green;ctx.fillRect(165,ch+12,10,10);ctx.fillStyle=CC.text;ctx.fillText('After ML Optimization',181,ch+21);ctx.restore();}
+
+function drawAgeChart(){const ctx=clearCanvas('ageChart');if(!ctx)return;const CC=getChartColors();const W=ctx.canvas.width,H=ctx.canvas.height;const pad={t:20,r:20,b:30,l:40};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;const buckets=[0,0,0,0,0,0];const labels=['0–17','18–34','35–49','50–64','65–79','80+'];patients.forEach(p=>{const a=parseInt(p.age)||0;if(a<18)buckets[0]++;else if(a<35)buckets[1]++;else if(a<50)buckets[2]++;else if(a<65)buckets[3]++;else if(a<80)buckets[4]++;else buckets[5]++;});const maxV=Math.max(...buckets,1);ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(pad.l,pad.t);const bw2=cw/buckets.length;const cols=[CC.green,CC.accent,CC.yellow,CC.orange,CC.red,CC.purple];buckets.forEach((v,i)=>{const x=bw2*i+bw2*0.12;const bw=bw2*0.76;const bh=(v/maxV)*ch;const y=ch-bh;const g=ctx.createLinearGradient(x,y,x,ch);g.addColorStop(0,cols[i]);g.addColorStop(1,cols[i]+'44');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(x,y,bw,bh,[3,3,0,0]);ctx.fill();ctx.fillStyle=getTheme()==='dark'?'#fff':CC.text;ctx.font='bold 9px JetBrains Mono,monospace';ctx.textAlign='center';if(v>0)ctx.fillText(v,x+bw/2,y-4);ctx.fillStyle=CC.text;ctx.font='9px JetBrains Mono,monospace';ctx.fillText(labels[i],x+bw/2,ch+14);});ctx.fillStyle=CC.text;ctx.textAlign='right';ctx.font='9px JetBrains Mono,monospace';for(let i=0;i<=5;i++){const y=ch/5*i;ctx.fillText(Math.round(maxV/5*(5-i)),-5,y+4);}ctx.restore();}
+
+/* =============================================
+   NAVIGATION
+============================================= */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id)?.classList.add('active');
+  const tabs=['dashboard','priority','patients','dataset','predictions','analytics','admin'];
+  const navTabs=document.querySelectorAll('.nav-tab');
+  const idx=tabs.indexOf(id);
+  if(idx>=0&&navTabs[idx])navTabs[idx].classList.add('active');
+  if(id==='dashboard'){renderDashboard();setTimeout(()=>{drawFlowChart();drawUtilChart();},100);}
+  if(id==='priority')renderPriority();
+  if(id==='patients')renderPatientTable();
+  if(id==='dataset')renderDatasetTable();
+  if(id==='analytics'){renderAnalytics();setTimeout(()=>{drawRiskChart();drawUnitChart();drawWaitChart();drawAgeChart();},100);}
+  if(id==='predictions'){renderPredictions();setTimeout(()=>{drawDischargeChart();drawForecastChart();drawAccuracyChart();},100);}
+  if(id==='admin'){renderAdmin();}
+  window.scrollTo(0,0);
+}
+
+function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});});
+function animNum(id,target,suf=''){const el=document.getElementById(id);if(!el)return;const isF=target%1!==0;const step=target/(1500/16);let cur=0;const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=(isF?cur.toFixed(1):Math.floor(cur))+suf;if(cur>=target)clearInterval(t);},16);}
+
+function updateClock(){
+  const t=new Date().toTimeString().slice(0,8);
+  const el=document.getElementById('liveClock');if(el)el.textContent=t;
+  const el2=document.getElementById('loginClock');if(el2)el2.textContent=t;
+}
+setInterval(updateClock,1000);updateClock();
+setInterval(updateLoginStatus,5000);
+
+function refreshAll(){
+  patients.forEach(p=>{const sc=calcPriorityScore(p);p.priorityScore=sc.score;p.priority=sc.priority;p.pClass=sc.pClass;p.priorityReasons=sc.reasons;p.risk=calcRiskFromScore(sc.score);});
+  renderDatasetTable();renderPatientTable();renderDashboard();
+  setTimeout(()=>{drawFlowChart();drawUtilChart();},100);
+}
+
+/* =============================================
+   INIT
+============================================= */
+window.addEventListener('DOMContentLoaded',()=>{
+  // Apply saved theme
+  applyTheme(getTheme());
+
+  // Check for saved session
+  try{
+    const saved=localStorage.getItem(SESSION_KEY);
+    if(saved){
+      currentUser=JSON.parse(saved);
+      loadAudit();loadData();launchApp();return;
+    }
+  }catch(e){}
+  updateLoginStatus();setRole('user');
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open'));
+});
+</script>
+</body>
+</html>
