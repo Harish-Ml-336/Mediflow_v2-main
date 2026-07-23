@@ -334,3 +334,19 @@ Passionate about AI, Healthcare Technology, Full Stack Development, Machine Lear
 ---
 
 ## ⭐ If you found this project useful, don't forget to Star ⭐ the repository.
+
+## 🏢 Internship Information
+
+This project was developed as part of my internship at **CodTech Solutions**, where I worked on designing and developing innovative software solutions while enhancing my skills in web development, problem-solving, and software engineering.
+
+**Internship Details**
+
+* **Organization:** CodTech Solutions
+* **Project:** MediFlow AI – Intelligent Hospital Management & Patient Prioritization Platform
+* **Intern ID:** CITS6496
+* **Role:** Software Development Intern
+
+During this internship, I designed and developed a modern healthcare management platform featuring intelligent patient prioritization, hospital analytics, electronic patient record management, and interactive dashboards using HTML, CSS, and JavaScript.
+
+This project demonstrates practical knowledge in frontend development, user interface design, data management, and healthcare workflow optimization while following industry-standard software development practices.
+
